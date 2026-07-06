@@ -36,7 +36,9 @@ jobs:
 
       - name: CocoaPods
         working-directory: app/macos
-        run: pod install
+        run: |
+          rm -rf Pods Podfile.lock
+          pod install
 
       - name: arm64-only + ad-hoc signing (CI)
         run: |
@@ -47,7 +49,6 @@ jobs:
         working-directory: app
         run: flutter clean
 
-      # Native arm64 only — x86_64 slice triggers macos_dock_progress Swift ICE on CI.
       - name: Compile macOS (arm64)
         working-directory: app
         env:
