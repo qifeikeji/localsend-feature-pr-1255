@@ -1,5 +1,8 @@
 name: Build macOS arm64
 
+# Intel Mac (e.g. macOS 12.x on Mac mini): use scripts/build_macos_intel_local.sh locally.
+# Artifacts from this workflow are arm64 only (Apple Silicon).
+
 on:
   push:
   workflow_dispatch:
@@ -31,17 +34,26 @@ jobs:
         working-directory: app
         run: flutter pub get
 
-      - name: Ad-hoc code signing for CI
-        run: bash scripts/ci/macos_adhoc_sign.sh
-
       - name: CocoaPods
         working-directory: app/macos
         run: pod install
 
-      # Native arm64 on Apple Silicon runners. x86_64 cross-build crashes in macos_dock_progress (Swift).
+      - name: arm64-only + ad-hoc signing (CI)
+        run: |
+          bash scripts/ci/macos_adhoc_sign.sh
+          bash scripts/ci/macos_arm64_only.sh
+
+      - name: Clean macOS build
+        working-directory: app
+        run: flutter clean
+
+      # Native arm64 only — x86_64 slice triggers macos_dock_progress Swift ICE on CI.
       - name: Compile macOS (arm64)
         working-directory: app
         env:
+          ARCHS: arm64
+          EXCLUDED_ARCHS: x86_64
+          ONLY_ACTIVE_ARCH: YES
           CODE_SIGN_IDENTITY: "-"
           CODE_SIGNING_ALLOWED: "NO"
           CODE_SIGNING_REQUIRED: "NO"
