@@ -105,4 +105,22 @@ class WindowDimensionsController {
     }
     return Size(width, height);
   }
+
+  /// Scheme 1 startup: hide native shell, apply prefs size/position, then show (unless [showWhenDone] is false).
+  static Future<void> prepareDesktopWindowLaunch({
+    required PersistenceService persistence,
+    required bool showWhenDone,
+  }) async {
+    await WindowManager.instance.ensureInitialized();
+    try {
+      await WindowManager.instance.hide();
+    } catch (_) {
+      // Window may already be hidden (e.g. macOS hiddenWindowAtLaunch).
+    }
+    await WindowDimensionsController(persistence).initDimensionsConfiguration();
+    if (showWhenDone) {
+      await WindowManager.instance.show();
+      await WindowManager.instance.focus();
+    }
+  }
 }

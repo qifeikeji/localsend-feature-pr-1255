@@ -37,6 +37,8 @@ class DesktopNavigationSidebar extends StatelessWidget {
         context.ref.watch(nearbyDevicesProvider.select((s) => (s.runningFavoriteScan, s.runningIps)));
     final animations = context.ref.watch(animationProvider);
     final spinning = (scanningFavorites || scanningIps.isNotEmpty) && animations;
+    final pasteOpacity = context.ref.watch(settingsProvider.select((s) => s.pasteButtonOpacity));
+    final pasteGradient = context.ref.watch(settingsProvider.select((s) => s.pasteButtonGradientSpan));
 
     return Material(
       color: Theme.of(context).cardColorWithElevation,
@@ -58,6 +60,9 @@ class DesktopNavigationSidebar extends StatelessWidget {
               extended: extended,
               icon: tab.icon,
               label: extended ? tab.label : null,
+              pasteSelectionStyle: true,
+              pasteOpacity: pasteOpacity,
+              pasteGradientSpan: pasteGradient,
               onTap: () => onTabSelected(tab.index),
             );
           }),

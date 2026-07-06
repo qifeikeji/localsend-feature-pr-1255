@@ -35,7 +35,6 @@ import 'package:localsend_app/util/ui/snackbar.dart';
 import 'package:logging/logging.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 import 'package:share_handler/share_handler.dart';
-import 'package:window_manager/window_manager.dart';
 
 const launchAtStartupArg = 'autostart';
 
@@ -76,23 +75,20 @@ Future<RefenaContainer> preInit(List<String> args) async {
       exit(0); // Another instance does exist because no error is thrown
     } catch (_) {}
 
+    final showWhenDone = !args.contains(launchAtStartupArg) || !persistenceService.isAutoStartLaunchMinimized();
+    await WindowDimensionsController.prepareDesktopWindowLaunch(
+      persistence: persistenceService,
+      showWhenDone: showWhenDone,
+    );
+    if (!showWhenDone) {
+      startHidden = true;
+    }
+
     // initialize tray AFTER i18n has been initialized
     try {
       await initTray();
     } catch (e) {
       _logger.warning('Initializing tray failed: $e');
-    }
-
-    // initialize size and position
-    await WindowManager.instance.ensureInitialized();
-    await WindowDimensionsController(persistenceService).initDimensionsConfiguration();
-    if (!args.contains(launchAtStartupArg) || !persistenceService.isAutoStartLaunchMinimized()) {
-      // We show this app, when (1) app started manually, (2) app should not start minimized
-      // In other words: only start minimized when launched on startup and "launchMinimized" is configured
-      await WindowManager.instance.show();
-    } else {
-      // keep this app hidden
-      startHidden = true;
     }
   }
 

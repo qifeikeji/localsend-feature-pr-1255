@@ -13,6 +13,7 @@ import 'package:localsend_app/widget/dialogs/file_info_dialog.dart';
 import 'package:localsend_app/widget/dialogs/history_clear_dialog.dart';
 import 'package:localsend_app/widget/app_rounded_button_style.dart';
 import 'package:localsend_app/widget/file_thumbnail.dart';
+import 'package:localsend_app/widget/receive_history_context_menu.dart';
 import 'package:path/path.dart' as p;
 import 'package:refena_flutter/refena_flutter.dart';
 
@@ -104,23 +105,7 @@ class ReceiveHistoryListBody extends StatelessWidget {
     Dispatcher<ReceiveHistoryService, List<ReceiveHistoryEntry>> dispatcher,
   ) async {
     final options = _optionsFor(entry);
-    final overlayBox = Overlay.of(context).context.findRenderObject() as RenderBox;
-    final position = RelativeRect.fromRect(
-      Rect.fromLTWH(globalPosition.dx, globalPosition.dy, 1, 1),
-      Offset.zero & overlayBox.size,
-    );
-    final selected = await showMenu<ReceiveHistoryEntryOption>(
-      context: context,
-      position: position,
-      items: options
-          .map(
-            (e) => PopupMenuItem(
-              value: e,
-              child: Text(e.label),
-            ),
-          )
-          .toList(),
-    );
+    final selected = await showReceiveHistoryContextMenu(context, globalPosition, options);
     if (selected != null && context.mounted) {
       await _handleOption(context, entry, selected, dispatcher);
     }

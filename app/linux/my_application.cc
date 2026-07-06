@@ -49,20 +49,16 @@ static void my_application_activate(GApplication* application) {
 
   gtk_window_set_default_size(window, 900, 600);
 
-  if (!start_hidden) {
-    gtk_widget_show(GTK_WIDGET(window));
-  } else {
-    // Realize the window so plugins (like tray) can initialize,
-    // but don't map it to the screen.
-    gtk_widget_realize(GTK_WIDGET(window));
-  }
+  // Realize only; size and visibility are controlled by Flutter window_manager after prefs load.
+  gtk_widget_realize(GTK_WIDGET(window));
+  gtk_widget_set_visible(GTK_WIDGET(window), FALSE);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
 
   FlView* view = fl_view_new(project);
-  gtk_widget_show(GTK_WIDGET(view));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
+  gtk_widget_set_visible(GTK_WIDGET(view), FALSE);
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
 
