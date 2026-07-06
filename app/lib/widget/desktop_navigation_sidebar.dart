@@ -112,6 +112,7 @@ class DesktopNavigationSidebar extends StatelessWidget {
                           extended: extended,
                           icon: device.deviceType.icon,
                           label: extended ? name : null,
+                          subtitle: extended ? device.ip : null,
                           tooltip: extended ? null : '$name\n${device.ip}',
                           onTap: () async {
                             if (sendMode == SendMode.multiple) {

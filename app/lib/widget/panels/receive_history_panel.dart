@@ -18,7 +18,8 @@ class _ReceiveHistoryPanelState extends State<ReceiveHistoryPanel> with Refena {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
-    final width = (_dragWidth ?? settings.historyPanelWidth).clamp(200.0, 480.0);
+    final minW = settings.syncSidePanelWidths ? 72.0 : 200.0;
+    final width = (_dragWidth ?? settings.historyPanelWidth).clamp(minW, 480.0);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -29,7 +30,7 @@ class _ReceiveHistoryPanelState extends State<ReceiveHistoryPanel> with Refena {
             behavior: HitTestBehavior.translucent,
             onHorizontalDragUpdate: (details) {
               setState(() {
-                _dragWidth = (width - details.delta.dx).clamp(200.0, 480.0);
+                _dragWidth = (width - details.delta.dx).clamp(minW, 480.0);
               });
             },
             onHorizontalDragEnd: (_) async {

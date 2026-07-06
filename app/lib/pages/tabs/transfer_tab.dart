@@ -21,6 +21,8 @@ import 'package:localsend_app/widget/list_tile/device_list_tile.dart';
 import 'package:localsend_app/widget/local_send_logo.dart';
 import 'package:localsend_app/widget/rotating_widget.dart';
 import 'package:localsend_app/widget/send_queue_card.dart';
+import 'package:localsend_app/widget/paste_toolbar_button.dart';
+import 'package:localsend_app/widget/transfer_appearance_controls.dart';
 import 'package:localsend_app/widget/transfer_lower_glass_panel.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 import 'package:routerino/routerino.dart';
@@ -44,6 +46,8 @@ class TransferTab extends StatelessWidget {
         final sendMap = ref.watch(sendProvider);
         final sendEntry = activeEmbeddedSendSession(sendMap);
         final panelOpacity = ref.watch(settingsProvider.select((s) => s.sendLowerPanelOpacity));
+        final pasteOpacity = ref.watch(settingsProvider.select((s) => s.pasteButtonOpacity));
+        final pasteGradient = ref.watch(settingsProvider.select((s) => s.pasteButtonGradientSpan));
 
         final receiveSending = receiveSession?.status == SessionStatus.sending;
         final isDesktop = MediaQuery.sizeOf(context).width >= 800;
@@ -120,13 +124,16 @@ class TransferTab extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            const TransferAppearanceControls(),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                OutlinedButton.icon(
+                                PasteToolbarButton(
                                   onPressed: () async {
                                     await ref.dispatchAsync(PasteFromClipboardAction(context: context));
                                   },
+                                  opacity: pasteOpacity,
+                                  gradientSpan: pasteGradient,
                                   icon: const Icon(Icons.paste),
                                   label: Text(t.receiveTab.paste),
                                 ),

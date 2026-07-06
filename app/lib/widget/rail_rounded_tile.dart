@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:localsend_app/widget/app_rounded_button_style.dart';
+
+/// Fixed width for rail icons so tab and device rows align vertically.
+const double kRailIconSlotWidth = 28;
 
 /// Rounded pill button for the left rail (tabs and nearby devices).
 class RailRoundedTile extends StatefulWidget {
@@ -6,6 +10,7 @@ class RailRoundedTile extends StatefulWidget {
   final bool extended;
   final IconData icon;
   final String? label;
+  final String? subtitle;
   final VoidCallback? onTap;
   final String? tooltip;
 
@@ -14,6 +19,7 @@ class RailRoundedTile extends StatefulWidget {
     required this.extended,
     required this.icon,
     this.label,
+    this.subtitle,
     this.onTap,
     this.tooltip,
   });
@@ -39,33 +45,58 @@ class _RailRoundedTileState extends State<RailRoundedTile> {
 
   @override
   Widget build(BuildContext context) {
-    final child = MouseRegion(
+    final hasSubtitle = widget.extended && widget.subtitle != null && widget.subtitle!.isNotEmpty;
+    final verticalPad = hasSubtitle ? 10.0 : 8.0;
+
+    final inner = MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: Material(
         color: _backgroundColor(context),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(kAppRoundedButtonRadius),
         child: InkWell(
           onTap: widget.onTap,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(kAppRoundedButtonRadius),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: widget.extended ? 10 : 6, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: widget.extended ? 10 : 6, vertical: verticalPad),
             child: Row(
-              mainAxisAlignment: widget.extended ? MainAxisAlignment.center : MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: hasSubtitle ? CrossAxisAlignment.start : CrossAxisAlignment.center,
               children: [
-                Icon(widget.icon, size: 22),
-                if (widget.extended && widget.label != null) ...[
-                  const SizedBox(width: 6),
-                  Flexible(
-                    child: Text(
-                      widget.label!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 13),
-                    ),
+                SizedBox(
+                  width: kRailIconSlotWidth,
+                  child: Align(
+                    alignment: hasSubtitle ? Alignment.topCenter : Alignment.center,
+                    child: Icon(widget.icon, size: 22),
                   ),
-                ],
+                ),
+                if (widget.extended && widget.label != null)
+                  Expanded(
+                    child: hasSubtitle
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.label!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                widget.subtitle!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 11, color: Colors.green),
+                              ),
+                            ],
+                          )
+                        : Text(
+                            widget.label!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                  ),
               ],
             ),
           ),
@@ -73,11 +104,16 @@ class _RailRoundedTileState extends State<RailRoundedTile> {
       ),
     );
 
-    return Padding(
+    final tile = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      child: widget.tooltip != null
-          ? Tooltip(message: widget.tooltip!, child: child)
-          : child,
+      child: widget.extended
+          ? SizedBox(width: double.infinity, child: inner)
+          : inner,
     );
+
+    if (widget.tooltip != null) {
+      return Tooltip(message: widget.tooltip!, child: tile);
+    }
+    return tile;
   }
 }

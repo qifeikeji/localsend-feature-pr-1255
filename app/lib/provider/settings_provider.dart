@@ -44,6 +44,10 @@ class SettingsService extends PureNotifier<SettingsState> {
         historyPanelVisible: _persistence.getHistoryPanelVisible(),
         knownDeviceIps: _persistence.getKnownDeviceIps(),
         sendLowerPanelOpacity: _persistence.getSendLowerPanelOpacity(),
+        navigationPanelWidth: _persistence.getNavigationPanelWidth(),
+        syncSidePanelWidths: _persistence.getSyncSidePanelWidths(),
+        pasteButtonOpacity: _persistence.getPasteButtonOpacity(),
+        pasteButtonGradientSpan: _persistence.getPasteButtonGradientSpan(),
       );
 
   Future<void> setAlias(String alias) async {
@@ -194,10 +198,14 @@ class SettingsService extends PureNotifier<SettingsState> {
     );
   }
 
-  Future<void> setHistoryPanelWidth(double width) async {
-    final clamped = width.clamp(200.0, 480.0);
+  Future<void> setHistoryPanelWidth(double width, {bool fromSync = false}) async {
+    final minW = state.syncSidePanelWidths ? 72.0 : 200.0;
+    final clamped = width.clamp(minW, 480.0);
     await _persistence.setHistoryPanelWidth(clamped);
     state = state.copyWith(historyPanelWidth: clamped);
+    if (state.syncSidePanelWidths && !fromSync) {
+      await setNavigationPanelWidth(clamped, fromSync: true);
+    }
   }
 
   Future<void> setHistoryPanelVisible(bool visible) async {
@@ -224,5 +232,37 @@ class SettingsService extends PureNotifier<SettingsState> {
     final clamped = opacity.clamp(0.15, 0.95);
     await _persistence.setSendLowerPanelOpacity(clamped);
     state = state.copyWith(sendLowerPanelOpacity: clamped);
+  }
+
+  Future<void> setNavigationPanelWidth(double width, {bool fromSync = false}) async {
+    final clamped = width.clamp(72.0, 480.0);
+    await _persistence.setNavigationPanelWidth(clamped);
+    state = state.copyWith(navigationPanelWidth: clamped);
+    if (state.syncSidePanelWidths && !fromSync) {
+      await setHistoryPanelWidth(clamped, fromSync: true);
+    }
+  }
+
+  Future<void> setSyncSidePanelWidths(bool value) async {
+    await _persistence.setSyncSidePanelWidths(value);
+    state = state.copyWith(syncSidePanelWidths: value);
+    if (value) {
+      final w = state.navigationPanelWidth.clamp(72.0, 480.0);
+      await _persistence.setHistoryPanelWidth(w);
+      await _persistence.setNavigationPanelWidth(w);
+      state = state.copyWith(navigationPanelWidth: w, historyPanelWidth: w);
+    }
+  }
+
+  Future<void> setPasteButtonOpacity(double value) async {
+    final clamped = value.clamp(0.1, 0.95);
+    await _persistence.setPasteButtonOpacity(clamped);
+    state = state.copyWith(pasteButtonOpacity: clamped);
+  }
+
+  Future<void> setPasteButtonGradientSpan(double value) async {
+    final clamped = value.clamp(0.0, 1.0);
+    await _persistence.setPasteButtonGradientSpan(clamped);
+    state = state.copyWith(pasteButtonGradientSpan: clamped);
   }
 }

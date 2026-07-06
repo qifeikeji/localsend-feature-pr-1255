@@ -70,6 +70,10 @@ const _historyPanelWidth = 'ls_history_panel_width';
 const _historyPanelVisible = 'ls_history_panel_visible';
 const _knownDeviceIps = 'ls_known_device_ips';
 const _sendLowerPanelOpacity = 'ls_send_lower_panel_opacity';
+const _navigationPanelWidth = 'ls_navigation_panel_width';
+const _syncSidePanelWidths = 'ls_sync_side_panel_widths';
+const _pasteButtonOpacity = 'ls_paste_button_opacity';
+const _pasteButtonGradientSpan = 'ls_paste_button_gradient_span';
 const _startupWindowWidth = 'ls_startup_window_width';
 const _startupWindowHeight = 'ls_startup_window_height';
 
@@ -447,6 +451,38 @@ class PersistenceService {
 
   Future<void> setSendLowerPanelOpacity(double opacity) async {
     await _prefs.setDouble(_sendLowerPanelOpacity, opacity);
+  }
+
+  double getNavigationPanelWidth() {
+    return _prefs.getDouble(_navigationPanelWidth) ?? 180;
+  }
+
+  Future<void> setNavigationPanelWidth(double width) async {
+    await _prefs.setDouble(_navigationPanelWidth, width);
+  }
+
+  bool getSyncSidePanelWidths() {
+    return _prefs.getBool(_syncSidePanelWidths) ?? false;
+  }
+
+  Future<void> setSyncSidePanelWidths(bool value) async {
+    await _prefs.setBool(_syncSidePanelWidths, value);
+  }
+
+  double getPasteButtonOpacity() {
+    return _prefs.getDouble(_pasteButtonOpacity) ?? 0.55;
+  }
+
+  Future<void> setPasteButtonOpacity(double value) async {
+    await _prefs.setDouble(_pasteButtonOpacity, value);
+  }
+
+  double getPasteButtonGradientSpan() {
+    return _prefs.getDouble(_pasteButtonGradientSpan) ?? 0.35;
+  }
+
+  Future<void> setPasteButtonGradientSpan(double value) async {
+    await _prefs.setDouble(_pasteButtonGradientSpan, value);
   }
 
   Future<void> clear() async {

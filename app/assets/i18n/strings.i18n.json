@@ -114,7 +114,9 @@
       "startupWindowWidth": "Startup window width",
       "startupWindowHeight": "Startup window height",
       "historyPanelWidth": "History panel width",
-      "historyPanelWidthHint": "Used when the receive history panel is visible. The startup window width also reserves this space on launch."
+      "historyPanelWidthHint": "Used when the receive history panel is visible. The startup window width also reserves this space on launch.",
+      "navigationPanelWidth": "Left panel width",
+      "syncSidePanelWidths": "Keep left and right panel widths equal"
     },
     "receive": {
       "title": "Receive",
@@ -124,7 +126,9 @@
       "downloads": "(Downloads)",
       "saveToGallery": "Save media to gallery",
       "saveToHistory": "Save to history",
-      "sendLowerPanelOpacity": "Send panel opacity"
+      "sendLowerPanelOpacity": "Send panel opacity",
+      "pasteButtonOpacity": "Paste button opacity",
+      "pasteButtonGradientSpan": "Paste button gradient contrast"
     },
     "send": {
       "title": "Send",

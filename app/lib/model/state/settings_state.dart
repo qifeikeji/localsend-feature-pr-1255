@@ -35,6 +35,10 @@ class SettingsState with SettingsStateMappable {
   final bool historyPanelVisible;
   final String knownDeviceIps;
   final double sendLowerPanelOpacity;
+  final double navigationPanelWidth;
+  final bool syncSidePanelWidths;
+  final double pasteButtonOpacity;
+  final double pasteButtonGradientSpan;
 
   const SettingsState({
     required this.showToken,
@@ -63,5 +67,9 @@ class SettingsState with SettingsStateMappable {
     required this.historyPanelVisible,
     required this.knownDeviceIps,
     required this.sendLowerPanelOpacity,
+    required this.navigationPanelWidth,
+    required this.syncSidePanelWidths,
+    required this.pasteButtonOpacity,
+    required this.pasteButtonGradientSpan,
   });
 }

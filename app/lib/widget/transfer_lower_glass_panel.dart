@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:localsend_app/widget/app_rounded_button_style.dart';
 
 /// Frosted-glass lower send panel overlay on the transfer tab.
 class TransferLowerGlassPanel extends StatelessWidget {
@@ -14,7 +15,7 @@ class TransferLowerGlassPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const radius = 14.0;
+    const radius = kAppRoundedButtonRadius;
     final scheme = Theme.of(context).colorScheme;
 
     return ClipRRect(

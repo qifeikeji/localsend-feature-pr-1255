@@ -201,6 +201,46 @@ class SettingsTab extends StatelessWidget {
                     ],
                   ),
                 ),
+                _SettingsEntry(
+                  label: t.settingsTab.receive.pasteButtonOpacity,
+                  child: Column(
+                    children: [
+                      Slider(
+                        value: vm.settings.pasteButtonOpacity,
+                        min: 0.1,
+                        max: 0.95,
+                        onChanged: (v) async {
+                          await ref.notifier(settingsProvider).setPasteButtonOpacity(v);
+                        },
+                      ),
+                      Text(
+                        '${(vm.settings.pasteButtonOpacity * 100).round()}%',
+                        style: Theme.of(context).textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                _SettingsEntry(
+                  label: t.settingsTab.receive.pasteButtonGradientSpan,
+                  child: Column(
+                    children: [
+                      Slider(
+                        value: vm.settings.pasteButtonGradientSpan,
+                        min: 0,
+                        max: 1,
+                        onChanged: (v) async {
+                          await ref.notifier(settingsProvider).setPasteButtonGradientSpan(v);
+                        },
+                      ),
+                      Text(
+                        '${(vm.settings.pasteButtonGradientSpan * 100).round()}%',
+                        style: Theme.of(context).textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
                 if (checkPlatformWithFileSystem())
                   _SettingsEntry(
                     label: t.settingsTab.receive.destination,
@@ -680,6 +720,7 @@ class _DesktopLayoutSettingsState extends State<_DesktopLayoutSettings> with Ref
   late final TextEditingController _widthController;
   late final TextEditingController _heightController;
   late final TextEditingController _historyWidthController;
+  late final TextEditingController _navWidthController;
   var _initialized = false;
 
   @override
@@ -693,6 +734,7 @@ class _DesktopLayoutSettingsState extends State<_DesktopLayoutSettings> with Ref
     _widthController = TextEditingController(text: '${persistence.getStartupWindowWidth().round()}');
     _heightController = TextEditingController(text: '${persistence.getStartupWindowHeight().round()}');
     _historyWidthController = TextEditingController(text: '${ref.read(settingsProvider).historyPanelWidth.round()}');
+    _navWidthController = TextEditingController(text: '${ref.read(settingsProvider).navigationPanelWidth.round()}');
   }
 
   @override
@@ -701,6 +743,7 @@ class _DesktopLayoutSettingsState extends State<_DesktopLayoutSettings> with Ref
       _widthController.dispose();
       _heightController.dispose();
       _historyWidthController.dispose();
+      _navWidthController.dispose();
     }
     super.dispose();
   }
@@ -737,6 +780,30 @@ class _DesktopLayoutSettingsState extends State<_DesktopLayoutSettings> with Ref
               }
             },
           ),
+        ),
+        _SettingsEntry(
+          label: t.settingsTab.general.navigationPanelWidth,
+          child: TextFieldTv(
+            name: t.settingsTab.general.navigationPanelWidth,
+            controller: _navWidthController,
+            onChanged: (s) async {
+              final v = double.tryParse(s.trim());
+              if (v != null) {
+                await ref.notifier(settingsProvider).setNavigationPanelWidth(v);
+              }
+            },
+          ),
+        ),
+        _BooleanEntry(
+          label: t.settingsTab.general.syncSidePanelWidths,
+          value: ref.watch(settingsProvider.select((s) => s.syncSidePanelWidths)),
+          onChanged: (b) async {
+            await ref.notifier(settingsProvider).setSyncSidePanelWidths(b);
+            if (b) {
+              _navWidthController.text = '${ref.read(settingsProvider).navigationPanelWidth.round()}';
+              _historyWidthController.text = '${ref.read(settingsProvider).historyPanelWidth.round()}';
+            }
+          },
         ),
         _SettingsEntry(
           label: t.settingsTab.general.historyPanelWidth,

@@ -73,6 +73,14 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
   static const Field<SettingsState, String> _f$knownDeviceIps = Field('knownDeviceIps', _$knownDeviceIps);
   static double _$sendLowerPanelOpacity(SettingsState v) => v.sendLowerPanelOpacity;
   static const Field<SettingsState, double> _f$sendLowerPanelOpacity = Field('sendLowerPanelOpacity', _$sendLowerPanelOpacity);
+  static double _$navigationPanelWidth(SettingsState v) => v.navigationPanelWidth;
+  static const Field<SettingsState, double> _f$navigationPanelWidth = Field('navigationPanelWidth', _$navigationPanelWidth);
+  static bool _$syncSidePanelWidths(SettingsState v) => v.syncSidePanelWidths;
+  static const Field<SettingsState, bool> _f$syncSidePanelWidths = Field('syncSidePanelWidths', _$syncSidePanelWidths);
+  static double _$pasteButtonOpacity(SettingsState v) => v.pasteButtonOpacity;
+  static const Field<SettingsState, double> _f$pasteButtonOpacity = Field('pasteButtonOpacity', _$pasteButtonOpacity);
+  static double _$pasteButtonGradientSpan(SettingsState v) => v.pasteButtonGradientSpan;
+  static const Field<SettingsState, double> _f$pasteButtonGradientSpan = Field('pasteButtonGradientSpan', _$pasteButtonGradientSpan);
 
   @override
   final MappableFields<SettingsState> fields = const {
@@ -102,6 +110,10 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
     #historyPanelVisible: _f$historyPanelVisible,
     #knownDeviceIps: _f$knownDeviceIps,
     #sendLowerPanelOpacity: _f$sendLowerPanelOpacity,
+    #navigationPanelWidth: _f$navigationPanelWidth,
+    #syncSidePanelWidths: _f$syncSidePanelWidths,
+    #pasteButtonOpacity: _f$pasteButtonOpacity,
+    #pasteButtonGradientSpan: _f$pasteButtonGradientSpan,
   };
 
   static SettingsState _instantiate(DecodingData data) {
@@ -131,7 +143,11 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
         historyPanelWidth: data.dec(_f$historyPanelWidth),
         historyPanelVisible: data.dec(_f$historyPanelVisible),
         knownDeviceIps: data.dec(_f$knownDeviceIps),
-        sendLowerPanelOpacity: data.dec(_f$sendLowerPanelOpacity));
+        sendLowerPanelOpacity: data.dec(_f$sendLowerPanelOpacity),
+        navigationPanelWidth: data.dec(_f$navigationPanelWidth),
+        syncSidePanelWidths: data.dec(_f$syncSidePanelWidths),
+        pasteButtonOpacity: data.dec(_f$pasteButtonOpacity),
+        pasteButtonGradientSpan: data.dec(_f$pasteButtonGradientSpan));
   }
 
   @override
@@ -205,7 +221,11 @@ abstract class SettingsStateCopyWith<$R, $In extends SettingsState, $Out> implem
       double? historyPanelWidth,
       bool? historyPanelVisible,
       String? knownDeviceIps,
-      double? sendLowerPanelOpacity});
+      double? sendLowerPanelOpacity,
+      double? navigationPanelWidth,
+      bool? syncSidePanelWidths,
+      double? pasteButtonOpacity,
+      double? pasteButtonGradientSpan});
   SettingsStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -242,7 +262,11 @@ class _SettingsStateCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Setting
           double? historyPanelWidth,
           bool? historyPanelVisible,
           String? knownDeviceIps,
-          double? sendLowerPanelOpacity}) =>
+          double? sendLowerPanelOpacity,
+          double? navigationPanelWidth,
+          bool? syncSidePanelWidths,
+          double? pasteButtonOpacity,
+          double? pasteButtonGradientSpan}) =>
       $apply(FieldCopyWithData({
         if (showToken != null) #showToken: showToken,
         if (alias != null) #alias: alias,
@@ -269,7 +293,11 @@ class _SettingsStateCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Setting
         if (historyPanelWidth != null) #historyPanelWidth: historyPanelWidth,
         if (historyPanelVisible != null) #historyPanelVisible: historyPanelVisible,
         if (knownDeviceIps != null) #knownDeviceIps: knownDeviceIps,
-        if (sendLowerPanelOpacity != null) #sendLowerPanelOpacity: sendLowerPanelOpacity
+        if (sendLowerPanelOpacity != null) #sendLowerPanelOpacity: sendLowerPanelOpacity,
+        if (navigationPanelWidth != null) #navigationPanelWidth: navigationPanelWidth,
+        if (syncSidePanelWidths != null) #syncSidePanelWidths: syncSidePanelWidths,
+        if (pasteButtonOpacity != null) #pasteButtonOpacity: pasteButtonOpacity,
+        if (pasteButtonGradientSpan != null) #pasteButtonGradientSpan: pasteButtonGradientSpan
       }));
   @override
   SettingsState $make(CopyWithData data) => SettingsState(
@@ -298,7 +326,11 @@ class _SettingsStateCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Setting
       historyPanelWidth: data.get(#historyPanelWidth, or: $value.historyPanelWidth),
       historyPanelVisible: data.get(#historyPanelVisible, or: $value.historyPanelVisible),
       knownDeviceIps: data.get(#knownDeviceIps, or: $value.knownDeviceIps),
-      sendLowerPanelOpacity: data.get(#sendLowerPanelOpacity, or: $value.sendLowerPanelOpacity));
+      sendLowerPanelOpacity: data.get(#sendLowerPanelOpacity, or: $value.sendLowerPanelOpacity),
+      navigationPanelWidth: data.get(#navigationPanelWidth, or: $value.navigationPanelWidth),
+      syncSidePanelWidths: data.get(#syncSidePanelWidths, or: $value.syncSidePanelWidths),
+      pasteButtonOpacity: data.get(#pasteButtonOpacity, or: $value.pasteButtonOpacity),
+      pasteButtonGradientSpan: data.get(#pasteButtonGradientSpan, or: $value.pasteButtonGradientSpan));
 
   @override
   SettingsStateCopyWith<$R2, SettingsState, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) => _SettingsStateCopyWithImpl($value, $cast, t);

@@ -11,7 +11,7 @@ import 'package:localsend_app/util/native/open_folder.dart';
 import 'package:localsend_app/util/native/platform_check.dart';
 import 'package:localsend_app/widget/dialogs/file_info_dialog.dart';
 import 'package:localsend_app/widget/dialogs/history_clear_dialog.dart';
-import 'package:localsend_app/widget/file_thumbnail.dart';
+import 'package:localsend_app/widget/app_rounded_button_style.dart';
 import 'package:path/path.dart' as p;
 import 'package:refena_flutter/refena_flutter.dart';
 
@@ -141,10 +141,7 @@ class ReceiveHistoryListBody extends StatelessWidget {
               children: [
                 SizedBox(width: hPad),
                 ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.secondaryContainerIfDark,
-                    foregroundColor: Theme.of(context).colorScheme.onSecondaryContainerIfDark,
-                  ),
+                  style: appToolbarElevatedButtonStyle(context),
                   onPressed: checkPlatform([TargetPlatform.iOS])
                       ? null
                       : () async {
@@ -156,10 +153,7 @@ class ReceiveHistoryListBody extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.secondaryContainerIfDark,
-                    foregroundColor: Theme.of(context).colorScheme.onSecondaryContainerIfDark,
-                  ),
+                  style: appToolbarElevatedButtonStyle(context),
                   onPressed: entries.isEmpty
                       ? null
                       : () async {

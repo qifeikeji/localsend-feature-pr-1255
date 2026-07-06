@@ -585,6 +585,8 @@ class _StringsSettingsTabGeneralEn {
 	String get startupWindowHeight => 'Startup window height';
 	String get historyPanelWidth => 'History panel width';
 	String get historyPanelWidthHint => 'Used when the receive history panel is visible. The startup window width also reserves this space on launch.';
+	String get navigationPanelWidth => 'Left panel width';
+	String get syncSidePanelWidths => 'Keep left and right panel widths equal';
 }
 
 // Path: settingsTab.receive
@@ -602,6 +604,8 @@ class _StringsSettingsTabReceiveEn {
 	String get saveToGallery => 'Save media to gallery';
 	String get saveToHistory => 'Save to history';
 	String get sendLowerPanelOpacity => 'Send panel opacity';
+	String get pasteButtonOpacity => 'Paste button opacity';
+	String get pasteButtonGradientSpan => 'Paste button gradient contrast';
 }
 
 // Path: settingsTab.send

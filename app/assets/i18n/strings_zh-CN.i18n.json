@@ -114,7 +114,9 @@
       "startupWindowWidth": "启动时窗口宽度",
       "startupWindowHeight": "启动时窗口高度",
       "historyPanelWidth": "历史侧栏宽度",
-      "historyPanelWidthHint": "接收历史侧栏显示时使用。启动时会在窗口宽度中预留该侧栏空间。"
+      "historyPanelWidthHint": "接收历史侧栏显示时使用。启动时会在窗口宽度中预留该侧栏空间。",
+      "navigationPanelWidth": "左侧面板宽度",
+      "syncSidePanelWidths": "左右侧栏宽度保持一致"
     },
     "receive": {
       "title": "接收",
@@ -124,7 +126,9 @@
       "downloads": "(下载)",
       "saveToGallery": "保存到相册",
       "saveToHistory": "保存到历史记录",
-      "sendLowerPanelOpacity": "发送区面板不透明度"
+      "sendLowerPanelOpacity": "发送区面板不透明度",
+      "pasteButtonOpacity": "粘贴按钮不透明度",
+      "pasteButtonGradientSpan": "粘贴按钮渐变对比度"
     },
     "send": {
       "title": "发送",

@@ -100,6 +100,9 @@ class WindowDimensionsController {
     if (checkPlatformIsDesktop() && _service.getHistoryPanelVisible()) {
       width += _service.getHistoryPanelWidth() + 4;
     }
+    if (checkPlatformIsDesktop()) {
+      width += _service.getNavigationPanelWidth() + 4;
+    }
     return Size(width, height);
   }
 }

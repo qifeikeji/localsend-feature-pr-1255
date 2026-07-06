@@ -509,6 +509,8 @@ class _StringsSettingsTabGeneralZhCn extends _StringsSettingsTabGeneralEn {
 	@override String get startupWindowHeight => '启动时窗口高度';
 	@override String get historyPanelWidth => '历史侧栏宽度';
 	@override String get historyPanelWidthHint => '接收历史侧栏显示时使用。启动时会在窗口宽度中预留该侧栏空间。';
+	@override String get navigationPanelWidth => '左侧面板宽度';
+	@override String get syncSidePanelWidths => '左右侧栏宽度保持一致';
 }
 
 // Path: settingsTab.receive
@@ -526,6 +528,8 @@ class _StringsSettingsTabReceiveZhCn extends _StringsSettingsTabReceiveEn {
 	@override String get saveToGallery => '保存到相册';
 	@override String get saveToHistory => '保存到历史记录';
 	@override String get sendLowerPanelOpacity => '发送区面板不透明度';
+	@override String get pasteButtonOpacity => '粘贴按钮不透明度';
+	@override String get pasteButtonGradientSpan => '粘贴按钮渐变对比度';
 }
 
 // Path: settingsTab.send
