@@ -3,8 +3,7 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/init.dart';
-import 'package:localsend_app/pages/tabs/receive_tab.dart';
-import 'package:localsend_app/pages/tabs/send_tab.dart';
+import 'package:localsend_app/pages/tabs/transfer_tab.dart';
 import 'package:localsend_app/pages/tabs/settings_tab.dart';
 import 'package:localsend_app/provider/network/scan_facade.dart';
 import 'package:localsend_app/provider/network/server/server_provider.dart';
@@ -19,8 +18,7 @@ import 'package:localsend_app/widget/responsive_builder.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 
 enum HomeTab {
-  receive(Icons.wifi),
-  send(Icons.send),
+  transfer(Icons.swap_vert),
   settings(Icons.settings);
 
   const HomeTab(this.icon);
@@ -29,10 +27,8 @@ enum HomeTab {
 
   String get label {
     switch (this) {
-      case HomeTab.receive:
+      case HomeTab.transfer:
         return t.receiveTab.title;
-      case HomeTab.send:
-        return t.sendTab.title;
       case HomeTab.settings:
         return t.settingsTab.title;
     }
@@ -58,7 +54,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with Refena {
   late PageController _pageController;
-  HomeTab _currentTab = HomeTab.receive;
+  HomeTab _currentTab = HomeTab.transfer;
 
   bool _dragAndDropIndicator = false;
 
@@ -104,15 +100,15 @@ class _HomePageState extends State<HomePage> with Refena {
   }
 
   void _switchToReceiveIfIncoming(SessionStatus? status) {
-    if (status != SessionStatus.waiting || _currentTab == HomeTab.receive) {
+    if (status != SessionStatus.waiting || _currentTab == HomeTab.transfer) {
       return;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) {
         return;
       }
-      if (ref.read(serverProvider)?.session?.status == SessionStatus.waiting && _currentTab != HomeTab.receive) {
-        _goToPage(HomeTab.receive.index);
+      if (ref.read(serverProvider)?.session?.status == SessionStatus.waiting && _currentTab != HomeTab.transfer) {
+        _goToPage(HomeTab.transfer.index);
       }
     });
   }
@@ -175,10 +171,12 @@ class _HomePageState extends State<HomePage> with Refena {
                         label: Text(tab.label),
                       );
                     }).toList(),
-                    trailing: SizedBox(
-                      width: sizingInformation.isDesktop ? 180 : 72,
-                      child: NearbyDevicesRail(extended: sizingInformation.isDesktop),
-                    ),
+                    trailing: _currentTab == HomeTab.transfer
+                        ? SizedBox(
+                            width: sizingInformation.isDesktop ? 180 : 72,
+                            child: NearbyDevicesRail(extended: sizingInformation.isDesktop),
+                          )
+                        : null,
                   ),
                 Expanded(
                   child: SafeArea(
@@ -189,8 +187,7 @@ class _HomePageState extends State<HomePage> with Refena {
                           controller: _pageController,
                           physics: const NeverScrollableScrollPhysics(),
                           children: const [
-                            ReceiveTab(),
-                            SendTab(),
+                            TransferTab(),
                             SettingsTab(),
                           ],
                         ),

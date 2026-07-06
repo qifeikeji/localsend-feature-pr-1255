@@ -45,6 +45,9 @@
     "dropHint": "Drop files here or press Ctrl+V to paste text or images",
     "itemsQueued": "Added to send queue",
     "queuedPreview": "Ready to send",
+    "paste": "Paste",
+    "sendSectionHint": "Paste or drag files here, then pick a device on the left to send",
+    "showHistoryPanel": "Show history panel",
     "infoBox": {
       "ip": "IP:",
       "port": "Port:",

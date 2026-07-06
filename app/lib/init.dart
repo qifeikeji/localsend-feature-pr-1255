@@ -204,6 +204,6 @@ class _HandleShareIntentAction extends AsyncGlobalAction {
           converter: CrossFileConverters.convertSharedAttachment,
         ));
 
-    goToPage(HomeTab.send.index);
+    goToPage(HomeTab.transfer.index);
   }
 }

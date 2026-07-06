@@ -93,10 +93,10 @@ class IncomingItemsHandler {
   static void navigateAfterQueue(Ref ref, {BuildContext? context, bool snackBarIfStaying = false}) {
     final server = ref.read(serverProvider);
     if (isReceiveUiIdle(server)) {
-      ref.redux(homeTabProvider).dispatch(SetHomeTabAction(HomeTab.receive));
+      ref.redux(homeTabProvider).dispatch(SetHomeTabAction(HomeTab.transfer));
       return;
     }
-    if (snackBarIfStaying && context != null && context.mounted && ref.read(homeTabProvider) == HomeTab.receive) {
+    if (snackBarIfStaying && context != null && context.mounted && ref.read(homeTabProvider) == HomeTab.transfer) {
       showQueuedSnackBar(context);
     }
   }

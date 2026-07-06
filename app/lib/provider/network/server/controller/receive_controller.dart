@@ -483,7 +483,7 @@ class ReceiveController {
         Future.delayed(Duration.zero, () {
           closeSession();
           // ignore: use_build_context_synchronously
-          Routerino.context.pushRootImmediately(() => const HomePage(initialTab: HomeTab.receive, appStart: false));
+          Routerino.context.pushRootImmediately(() => const HomePage(initialTab: HomeTab.transfer, appStart: false));
         });
       }
       _logger.info('Received all files.');

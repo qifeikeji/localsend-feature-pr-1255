@@ -113,6 +113,9 @@ class _StringsReceiveTabEn {
 	String get dropHint => 'Drop files here or press Ctrl+V to paste text or images';
 	String get itemsQueued => 'Added to send queue';
 	String get queuedPreview => 'Ready to send';
+	String get paste => 'Paste';
+	String get sendSectionHint => 'Paste or drag files here, then pick a device on the left to send';
+	String get showHistoryPanel => 'Show history panel';
 	late final _StringsReceiveTabInfoBoxEn infoBox = _StringsReceiveTabInfoBoxEn._(_root);
 }
 

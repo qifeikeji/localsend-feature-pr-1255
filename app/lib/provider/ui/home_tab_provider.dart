@@ -7,7 +7,7 @@ final homeTabProvider = ReduxProvider<HomeTabNotifier, HomeTab>((ref) => HomeTab
 
 class HomeTabNotifier extends ReduxNotifier<HomeTab> {
   @override
-  HomeTab init() => HomeTab.receive;
+  HomeTab init() => HomeTab.transfer;
 }
 
 class SetHomeTabAction extends ReduxAction<HomeTabNotifier, HomeTab> {
