@@ -15,6 +15,7 @@ import 'package:localsend_app/provider/settings_provider.dart';
 import 'package:localsend_app/provider/ui/home_tab_provider.dart';
 import 'package:localsend_app/util/ip_helper.dart';
 import 'package:localsend_app/widget/custom_icon_button.dart';
+import 'package:localsend_app/widget/embedded_receive_session.dart';
 import 'package:localsend_app/widget/inline_session_progress.dart';
 import 'package:localsend_app/widget/list_tile/device_list_tile.dart';
 import 'package:localsend_app/widget/local_send_logo.dart';
@@ -81,21 +82,9 @@ class TransferTab extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: _ReceiveIdleSection(vm: vm),
-                      ),
-                      if (receiveSending && receiveSession != null)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-                          child: InlineSessionProgress(
-                            sessionId: receiveSession.sessionId,
-                            kind: InlineSessionKind.receive,
-                          ),
-                        ),
-                    ],
-                  ),
+                  child: receiveSending && receiveSession != null
+                      ? EmbeddedReceiveSession(sessionId: receiveSession.sessionId)
+                      : _ReceiveIdleSection(vm: vm),
                 ),
                 const Divider(height: 1),
                 Expanded(
@@ -245,12 +234,6 @@ class _ReceiveIdleSection extends StatelessWidget {
               vm.serverState == null ? t.general.offline : vm.localIps.map((ip) => '#${ip.visualId}').toSet().join(' '),
               style: const TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              t.receiveTab.dropHint,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.outline),
             ),
           ],
         ),

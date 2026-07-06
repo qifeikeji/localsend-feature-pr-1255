@@ -304,6 +304,10 @@ class _ReceivePageState extends State<ReceivePage> with Refena {
                                           return;
                                         }
                                         _accept();
+                                        if (checkPlatformIsDesktop()) {
+                                          context.pop();
+                                          return;
+                                        }
                                         await context.pushAndRemoveUntilImmediately(
                                           removeUntil: ReceivePage,
                                           builder: () => ProgressPage(

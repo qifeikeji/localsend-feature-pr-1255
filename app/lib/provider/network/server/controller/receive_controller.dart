@@ -292,7 +292,7 @@ class ReceiveController {
       },
     );
 
-    if (quickSave) {
+    if (quickSave && !checkPlatformIsDesktop()) {
       // ignore: use_build_context_synchronously, unawaited_futures
       Routerino.context.pushImmediately(() => ProgressPage(
             showAppBar: false,
