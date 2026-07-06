@@ -17,18 +17,14 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Install Visual Studio 2019 C++ (Flutter Windows CMake)
-        run: >
-          choco install visualstudio2019buildtools -y --no-progress
-          --package-parameters
-          "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.CMake.Project --includeRecommended --passive --norestart"
-        timeout-minutes: 45
+      - name: Setup MSBuild (Visual Studio 2022)
+        uses: microsoft/setup-msbuild@v2
 
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
-          cache: true
+          cache: false
 
       - name: Get version
         id: version
@@ -42,13 +38,13 @@ jobs:
         working-directory: app
         run: flutter pub get
 
-      - name: Clean Windows build (avoid stale CMake generator)
+      - name: Clean Windows build
         working-directory: app
         run: flutter clean
 
       - name: Compile for Windows (x64)
         working-directory: app
-        run: flutter build windows
+        run: flutter build windows --release
 
       - name: Create empty settings.json
         working-directory: app
