@@ -5,6 +5,7 @@ import 'package:common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:localsend_app/model/cross_file.dart';
 import 'package:localsend_app/util/file_type_ext.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 const double defaultThumbnailSize = 50;

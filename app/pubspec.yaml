@@ -65,7 +65,7 @@ dependencies:
   url_launcher: 6.2.4
   uuid: 3.0.7
   wakelock_plus: 1.1.4
-  wechat_assets_picker: 8.8.1+1
+  wechat_assets_picker: 9.4.2
   window_manager: 0.3.8
   windows_taskbar: 1.1.2
   yaru: 1.2.2
@@ -83,7 +83,6 @@ dev_dependencies:
   test: ^1.24.3
 
 dependency_overrides:
-  photo_manager: 3.6.4
   permission_handler_windows:
     # Remove windows support as it causes trouble with Windows 7
     # https://github.com/Baseflow/flutter-permission-handler/issues/1034
