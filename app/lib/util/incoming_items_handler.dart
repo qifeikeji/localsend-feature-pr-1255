@@ -6,9 +6,13 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localsend_app/gen/strings.g.dart';
+import 'package:localsend_app/pages/home_page.dart';
+import 'package:localsend_app/provider/network/server/server_provider.dart';
 import 'package:localsend_app/provider/selection/selected_sending_files_provider.dart';
+import 'package:localsend_app/provider/ui/home_tab_provider.dart';
 import 'package:localsend_app/util/determine_image_type.dart';
 import 'package:localsend_app/util/native/cross_file_converters.dart';
+import 'package:localsend_app/util/receive_ui_state.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 
@@ -52,6 +56,12 @@ class IncomingItemsHandler {
       return true;
     }
 
+    final pasteboardText = await Pasteboard.text;
+    if (pasteboardText != null && pasteboardText.isNotEmpty) {
+      ref.redux(selectedSendingFilesProvider).dispatch(AddMessageAction(message: pasteboardText));
+      return true;
+    }
+
     final image = await Pasteboard.image;
     if (image != null) {
       final now = DateTime.now();
@@ -77,6 +87,18 @@ class IncomingItemsHandler {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(t.receiveTab.itemsQueued),
     ));
+  }
+
+  /// After files are queued: switch to receive tab when idle so the queue is visible.
+  static void navigateAfterQueue(Ref ref, {BuildContext? context, bool snackBarIfStaying = false}) {
+    final server = ref.read(serverProvider);
+    if (isReceiveUiIdle(server)) {
+      ref.redux(homeTabProvider).dispatch(SetHomeTabAction(HomeTab.receive));
+      return;
+    }
+    if (snackBarIfStaying && context != null && context.mounted && ref.read(homeTabProvider) == HomeTab.receive) {
+      showQueuedSnackBar(context);
+    }
   }
 }
 

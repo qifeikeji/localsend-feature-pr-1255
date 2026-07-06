@@ -8,9 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/pages/apk_picker_page.dart';
-import 'package:localsend_app/pages/home_page.dart';
 import 'package:localsend_app/provider/selection/selected_sending_files_provider.dart';
-import 'package:localsend_app/provider/ui/home_tab_provider.dart';
 import 'package:localsend_app/theme.dart';
 import 'package:localsend_app/util/incoming_items_handler.dart';
 import 'package:localsend_app/util/native/cross_file_converters.dart';
@@ -121,8 +119,8 @@ class PickFileAction extends AsyncGlobalAction {
       case FilePickerOption.clipboard:
         // ignore: use_build_context_synchronously
         final queued = await IncomingItemsHandler.handleClipboard(ref, context);
-        if (queued && ref.read(homeTabProvider) == HomeTab.receive && context.mounted) {
-          IncomingItemsHandler.showQueuedSnackBar(context);
+        if (queued) {
+          IncomingItemsHandler.navigateAfterQueue(ref, context: context.mounted ? context : null);
         }
         break;
       case FilePickerOption.app:

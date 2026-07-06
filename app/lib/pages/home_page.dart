@@ -1,3 +1,4 @@
+import 'package:common/common.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:localsend_app/gen/strings.g.dart';
@@ -5,10 +6,14 @@ import 'package:localsend_app/init.dart';
 import 'package:localsend_app/pages/tabs/receive_tab.dart';
 import 'package:localsend_app/pages/tabs/send_tab.dart';
 import 'package:localsend_app/pages/tabs/settings_tab.dart';
+import 'package:localsend_app/provider/network/scan_facade.dart';
+import 'package:localsend_app/provider/network/server/server_provider.dart';
 import 'package:localsend_app/provider/settings_provider.dart';
 import 'package:localsend_app/provider/ui/home_tab_provider.dart';
 import 'package:localsend_app/theme.dart';
 import 'package:localsend_app/util/incoming_items_handler.dart';
+import 'package:localsend_app/util/native/platform_check.dart';
+import 'package:localsend_app/widget/nearby_devices_rail.dart';
 import 'package:localsend_app/widget/panels/receive_history_panel.dart';
 import 'package:localsend_app/widget/responsive_builder.dart';
 import 'package:refena_flutter/refena_flutter.dart';
@@ -67,6 +72,9 @@ class _HomePageState extends State<HomePage> with Refena {
     ensureRef((ref) async {
       ref.redux(homeTabProvider).dispatch(SetHomeTabAction(widget.initialTab));
       await postInit(context, ref, widget.appStart, _goToPage);
+      if (widget.appStart && checkPlatformIsDesktop()) {
+        await ref.dispatchAsync(StartSmartScan(forceLegacy: false));
+      }
     });
   }
 
@@ -82,6 +90,20 @@ class _HomePageState extends State<HomePage> with Refena {
   @override
   Widget build(BuildContext context) {
     Translations.of(context); // rebuild on locale change
+
+    ref.listen(homeTabProvider, (previous, next) {
+      if (_currentTab != next) {
+        setState(() => _currentTab = next);
+        _pageController.jumpToPage(next.index);
+      }
+    });
+
+    ref.listen(serverProvider.select((s) => s?.session?.status), (previous, next) {
+      if (next == SessionStatus.waiting && _currentTab != HomeTab.receive) {
+        _goToPage(HomeTab.receive.index);
+      }
+    });
+
     return DropTarget(
       onDragEntered: (_) {
         setState(() {
@@ -98,13 +120,7 @@ class _HomePageState extends State<HomePage> with Refena {
         if (!queued) {
           return;
         }
-        if (_currentTab == HomeTab.receive) {
-          if (mounted) {
-            IncomingItemsHandler.showQueuedSnackBar(context);
-          }
-        } else {
-          _goToPage(HomeTab.send.index);
-        }
+        IncomingItemsHandler.navigateAfterQueue(ref, context: mounted ? context : null);
       },
       child: ResponsiveBuilder(
         builder: (sizingInformation) {
@@ -137,6 +153,10 @@ class _HomePageState extends State<HomePage> with Refena {
                         label: Text(tab.label),
                       );
                     }).toList(),
+                    trailing: SizedBox(
+                      width: sizingInformation.isDesktop ? 180 : 72,
+                      child: NearbyDevicesRail(extended: sizingInformation.isDesktop),
+                    ),
                   ),
                 Expanded(
                   child: SafeArea(

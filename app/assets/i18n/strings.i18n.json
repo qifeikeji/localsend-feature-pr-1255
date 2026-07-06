@@ -44,6 +44,7 @@
     "title": "Receive",
     "dropHint": "Drop files here or press Ctrl+V to paste text or images",
     "itemsQueued": "Added to send queue",
+    "queuedPreview": "Ready to send",
     "infoBox": {
       "ip": "IP:",
       "port": "Port:",

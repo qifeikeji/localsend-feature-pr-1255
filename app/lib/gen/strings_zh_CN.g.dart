@@ -107,6 +107,7 @@ class _StringsReceiveTabZhCn extends _StringsReceiveTabEn {
 	@override String get title => '接收';
 	@override String get dropHint => '可拖入文件，或按 Ctrl+V 粘贴文本/图片';
 	@override String get itemsQueued => '已加入发送队列';
+	@override String get queuedPreview => '待发送';
 	@override late final _StringsReceiveTabInfoBoxZhCn infoBox = _StringsReceiveTabInfoBoxZhCn._(_root);
 }
 

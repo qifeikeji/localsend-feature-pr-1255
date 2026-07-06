@@ -93,7 +93,7 @@ class _ProgressPageState extends State<ProgressPage> with Refena {
           setState(() => _dragIndicator = false);
           final queued = await IncomingItemsHandler.handleDroppedFiles(ref, event.files);
           if (queued && mounted) {
-            IncomingItemsHandler.showQueuedSnackBar(context);
+            IncomingItemsHandler.navigateAfterQueue(ref, context: context);
           }
         },
         child: Scaffold(

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:localsend_app/util/native/file_picker.dart';
+import 'package:localsend_app/provider/clipboard_paste_action.dart';
 import 'package:localsend_app/util/native/platform_check.dart';
 import 'package:localsend_app/widget/watcher/window_watcher.dart';
 import 'package:refena_flutter/refena_flutter.dart';
@@ -15,7 +15,10 @@ class ShortcutWatcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Shortcuts(
+    return Focus(
+      autofocus: true,
+      canRequestFocus: true,
+      child: Shortcuts(
       shortcuts: {
         // The select button on AndroidTV needs this to work
         LogicalKeySet(LogicalKeyboardKey.select): const ActivateIntent(),
@@ -37,7 +40,7 @@ class ShortcutWatcher extends StatelessWidget {
           _ExitAppIntent: CallbackAction(onInvoke: (_) => exit(0)),
           _PopPageIntent: CallbackAction(onInvoke: (_) async => Navigator.of(Routerino.context).maybePop()),
           _PasteIntent: CallbackAction(onInvoke: (_) async {
-            await context.ref.dispatchAsync(PickFileAction(option: FilePickerOption.clipboard, context: context));
+            await context.ref.dispatchAsync(PasteFromClipboardAction(context: context));
             return null;
           }),
           _CloseWindowIntent: CallbackAction<_CloseWindowIntent>(
@@ -48,6 +51,7 @@ class ShortcutWatcher extends StatelessWidget {
           ),
         },
         child: child,
+      ),
       ),
     );
   }

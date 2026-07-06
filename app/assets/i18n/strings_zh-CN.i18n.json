@@ -44,6 +44,7 @@
     "title": "接收",
     "dropHint": "可拖入文件，或按 Ctrl+V 粘贴文本/图片",
     "itemsQueued": "已加入发送队列",
+    "queuedPreview": "待发送",
     "infoBox": {
       "ip": "IP:",
       "port": "端口：",

@@ -4,9 +4,13 @@ import 'package:localsend_app/pages/home_page.dart';
 import 'package:localsend_app/pages/receive_history_page.dart';
 import 'package:localsend_app/pages/tabs/receive_tab_vm.dart';
 import 'package:localsend_app/provider/animation_provider.dart';
+import 'package:localsend_app/provider/clipboard_paste_action.dart';
+import 'package:localsend_app/provider/selection/selected_sending_files_provider.dart';
 import 'package:localsend_app/provider/settings_provider.dart';
 import 'package:localsend_app/provider/ui/home_tab_provider.dart';
 import 'package:localsend_app/util/ip_helper.dart';
+import 'package:localsend_app/util/receive_ui_state.dart';
+import 'package:localsend_app/widget/queued_send_preview.dart';
 import 'package:localsend_app/widget/animations/initial_fade_transition.dart';
 import 'package:localsend_app/widget/custom_icon_button.dart';
 import 'package:localsend_app/widget/local_send_logo.dart';
@@ -23,6 +27,8 @@ class ReceiveTab extends StatelessWidget {
     final vm = context.ref.watch(receiveTabVmProvider);
     final hideHistoryForSidePanel =
         MediaQuery.sizeOf(context).width >= 800 && context.ref.watch(settingsProvider.select((s) => s.historyPanelVisible));
+    final queuedFiles = context.ref.watch(selectedSendingFilesProvider);
+    final showQueuedPreview = isReceiveUiIdle(vm.serverState) && queuedFiles.isNotEmpty;
 
     return Stack(
       children: [
@@ -71,11 +77,13 @@ class ReceiveTab extends StatelessWidget {
                               InitialFadeTransition(
                                 duration: const Duration(milliseconds: 300),
                                 delay: const Duration(milliseconds: 600),
-                                child: Text(
-                                  t.receiveTab.dropHint,
-                                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.outline),
-                                  textAlign: TextAlign.center,
-                                ),
+                                child: showQueuedPreview
+                                    ? QueuedSendPreview(files: queuedFiles)
+                                    : Text(
+                                        t.receiveTab.dropHint,
+                                        style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.outline),
+                                        textAlign: TextAlign.center,
+                                      ),
                               ),
                             ],
                           ),
@@ -86,22 +94,37 @@ class ReceiveTab extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Center(
-                      child: vm.quickSaveSettings
-                          ? ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).colorScheme.primary,
-                                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                              ),
-                              onPressed: () async => vm.onSetQuickSave(context, false),
-                              child: Text('${t.general.quickSave}: ${t.general.on}'),
-                            )
-                          : TextButton(
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.grey,
-                              ),
-                              onPressed: () async => vm.onSetQuickSave(context, true),
-                              child: Text('${t.general.quickSave}: ${t.general.off}'),
-                            ),
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 12,
+                        runSpacing: 8,
+                        children: [
+                          vm.quickSaveSettings
+                              ? ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Theme.of(context).colorScheme.primary,
+                                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                                  ),
+                                  onPressed: () async => vm.onSetQuickSave(context, false),
+                                  child: Text('${t.general.quickSave}: ${t.general.on}'),
+                                )
+                              : TextButton(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.grey,
+                                  ),
+                                  onPressed: () async => vm.onSetQuickSave(context, true),
+                                  child: Text('${t.general.quickSave}: ${t.general.off}'),
+                                ),
+                          OutlinedButton.icon(
+                            onPressed: () async {
+                              await context.ref.dispatchAsync(PasteFromClipboardAction(context: context));
+                            },
+                            icon: const Icon(Icons.paste),
+                            label: Text(t.sendTab.picker.clipboard),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 15),

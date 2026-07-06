@@ -10,7 +10,8 @@ import 'package:localsend_app/provider/animation_provider.dart';
 import 'package:localsend_app/provider/network/nearby_devices_provider.dart';
 import 'package:localsend_app/provider/network/scan_facade.dart';
 import 'package:localsend_app/provider/network/send_provider.dart';
-import 'package:localsend_app/provider/progress_provider.dart';
+import 'package:localsend_app/provider/clipboard_paste_action.dart';
+import 'package:localsend_app/provider/selection/selected_sending_files_provider.dart';
 import 'package:localsend_app/provider/settings_provider.dart';
 import 'package:localsend_app/theme.dart';
 import 'package:localsend_app/util/file_size_helper.dart';
@@ -45,7 +46,11 @@ class SendTab extends StatelessWidget {
       },
       builder: (context, vm) {
         final ref = context.ref;
-        return ResponsiveListView(
+        final showDevicesInTab = MediaQuery.sizeOf(context).width < 700;
+        return Column(
+          children: [
+            Expanded(
+              child: ResponsiveListView(
           padding: EdgeInsets.zero,
           children: [
             const SizedBox(height: 20),
@@ -116,6 +121,16 @@ class SendTab extends StatelessWidget {
                         children: [
                           TextButton(
                             style: TextButton.styleFrom(
+                              foregroundColor: Theme.of(context).colorScheme.error,
+                            ),
+                            onPressed: () {
+                              ref.redux(selectedSendingFilesProvider).dispatch(ClearSelectionAction());
+                            },
+                            child: Text(t.selectedFilesPage.deleteAll),
+                          ),
+                          const SizedBox(width: 8),
+                          TextButton(
+                            style: TextButton.styleFrom(
                               foregroundColor: Theme.of(context).colorScheme.onSurface,
                             ),
                             onPressed: () async {
@@ -153,69 +168,97 @@ class SendTab extends StatelessWidget {
                 ),
               ),
             ],
-            Row(
-              children: [
-                const SizedBox(width: _horizontalPadding),
-                Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Text(t.sendTab.nearbyDevices, style: Theme.of(context).textTheme.titleMedium),
+            if (showDevicesInTab) ...[
+              Row(
+                children: [
+                  const SizedBox(width: _horizontalPadding),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Text(t.sendTab.nearbyDevices, style: Theme.of(context).textTheme.titleMedium),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  _ScanButton(
+                    ips: vm.localIps,
+                  ),
+                  Tooltip(
+                    message: t.dialogs.addressInput.title,
+                    child: CustomIconButton(
+                      onPressed: () async => vm.onTapAddress(context),
+                      child: const Icon(Icons.ads_click),
+                    ),
+                  ),
+                  Tooltip(
+                    message: t.dialogs.favoriteDialog.title,
+                    child: CustomIconButton(
+                      onPressed: () async => await vm.onTapFavorite(context),
+                      child: const Icon(Icons.favorite),
+                    ),
+                  ),
+                  _SendModeButton(
+                    onSelect: (mode) async => vm.onTapSendMode(context, mode),
+                  ),
+                ],
+              ),
+              if (vm.nearbyDevices.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 10, left: _horizontalPadding, right: _horizontalPadding),
+                  child: Opacity(
+                    opacity: 0.3,
+                    child: DevicePlaceholderListTile(),
                   ),
                 ),
-                const SizedBox(width: 10),
-                _ScanButton(
-                  ips: vm.localIps,
-                ),
-                Tooltip(
-                  message: t.dialogs.addressInput.title,
-                  child: CustomIconButton(
-                    onPressed: () async => vm.onTapAddress(context),
-                    child: const Icon(Icons.ads_click),
+              ...vm.nearbyDevices.map((device) {
+                final favoriteEntry = vm.favoriteDevices.firstWhereOrNull((e) => e.fingerprint == device.fingerprint);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10, left: _horizontalPadding, right: _horizontalPadding),
+                  child: Hero(
+                    tag: 'device-${device.ip}',
+                    child: vm.sendMode == SendMode.multiple
+                        ? _MultiSendDeviceListTile(
+                            device: device,
+                            isFavorite: favoriteEntry != null,
+                            nameOverride: favoriteEntry?.alias,
+                            vm: vm,
+                          )
+                        : DeviceListTile(
+                            device: device,
+                            isFavorite: favoriteEntry != null,
+                            nameOverride: favoriteEntry?.alias,
+                            onFavoriteTap: () async => await vm.onToggleFavorite(device),
+                            onTap: () async => await vm.onTapDevice(context, device),
+                          ),
                   ),
-                ),
-                Tooltip(
-                  message: t.dialogs.favoriteDialog.title,
-                  child: CustomIconButton(
-                    onPressed: () async => await vm.onTapFavorite(context),
-                    child: const Icon(Icons.favorite),
-                  ),
-                ),
-                _SendModeButton(
-                  onSelect: (mode) async => vm.onTapSendMode(context, mode),
-                ),
-              ],
-            ),
-            if (vm.nearbyDevices.isEmpty)
-              const Padding(
-                padding: EdgeInsets.only(bottom: 10, left: _horizontalPadding, right: _horizontalPadding),
-                child: Opacity(
-                  opacity: 0.3,
-                  child: DevicePlaceholderListTile(),
+                );
+              }),
+            ] else ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Tooltip(
+                      message: t.dialogs.addressInput.title,
+                      child: CustomIconButton(
+                        onPressed: () async => vm.onTapAddress(context),
+                        child: const Icon(Icons.ads_click),
+                      ),
+                    ),
+                    Tooltip(
+                      message: t.dialogs.favoriteDialog.title,
+                      child: CustomIconButton(
+                        onPressed: () async => await vm.onTapFavorite(context),
+                        child: const Icon(Icons.favorite),
+                      ),
+                    ),
+                    _SendModeButton(
+                      onSelect: (mode) async => vm.onTapSendMode(context, mode),
+                    ),
+                  ],
                 ),
               ),
-            ...vm.nearbyDevices.map((device) {
-              final favoriteEntry = vm.favoriteDevices.firstWhereOrNull((e) => e.fingerprint == device.fingerprint);
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10, left: _horizontalPadding, right: _horizontalPadding),
-                child: Hero(
-                  tag: 'device-${device.ip}',
-                  child: vm.sendMode == SendMode.multiple
-                      ? _MultiSendDeviceListTile(
-                          device: device,
-                          isFavorite: favoriteEntry != null,
-                          nameOverride: favoriteEntry?.alias,
-                          vm: vm,
-                        )
-                      : DeviceListTile(
-                          device: device,
-                          isFavorite: favoriteEntry != null,
-                          nameOverride: favoriteEntry?.alias,
-                          onFavoriteTap: () async => await vm.onToggleFavorite(device),
-                          onTap: () async => await vm.onTapDevice(context, device),
-                        ),
-                ),
-              );
-            }),
+            ],
             const SizedBox(height: 10),
             Center(
               child: TextButton(
@@ -243,7 +286,22 @@ class SendTab extends StatelessWidget {
                 },
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 20),
+          ],
+        ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 8, 15, 20),
+              child: Center(
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    await ref.dispatchAsync(PasteFromClipboardAction(context: context));
+                  },
+                  icon: const Icon(Icons.paste),
+                  label: Text(t.sendTab.picker.clipboard),
+                ),
+              ),
+            ),
           ],
         );
       },
