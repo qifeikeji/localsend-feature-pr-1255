@@ -4,6 +4,9 @@ import 'package:localsend_app/widget/app_rounded_button_style.dart';
 /// Fixed width for rail icons so tab and device rows align vertically.
 const double kRailIconSlotWidth = 28;
 
+/// Outer vertical padding on each [RailRoundedTile] (gap between adjacent tiles is 2× this).
+const double kRailTileOuterVerticalPadding = 3;
+
 /// Rounded pill button for the left rail (tabs and nearby devices).
 class RailRoundedTile extends StatefulWidget {
   final bool selected;
@@ -105,7 +108,7 @@ class _RailRoundedTileState extends State<RailRoundedTile> {
     );
 
     final tile = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: kRailTileOuterVerticalPadding),
       child: widget.extended
           ? SizedBox(width: double.infinity, child: inner)
           : inner,

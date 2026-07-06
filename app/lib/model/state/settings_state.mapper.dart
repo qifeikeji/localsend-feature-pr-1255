@@ -81,6 +81,10 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
   static const Field<SettingsState, double> _f$pasteButtonOpacity = Field('pasteButtonOpacity', _$pasteButtonOpacity);
   static double _$pasteButtonGradientSpan(SettingsState v) => v.pasteButtonGradientSpan;
   static const Field<SettingsState, double> _f$pasteButtonGradientSpan = Field('pasteButtonGradientSpan', _$pasteButtonGradientSpan);
+  static double _$sendLowerPanelBrightness(SettingsState v) => v.sendLowerPanelBrightness;
+  static const Field<SettingsState, double> _f$sendLowerPanelBrightness = Field('sendLowerPanelBrightness', _$sendLowerPanelBrightness);
+  static int _$sendLowerPanelTintArgb(SettingsState v) => v.sendLowerPanelTintArgb;
+  static const Field<SettingsState, int> _f$sendLowerPanelTintArgb = Field('sendLowerPanelTintArgb', _$sendLowerPanelTintArgb);
 
   @override
   final MappableFields<SettingsState> fields = const {
@@ -114,6 +118,8 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
     #syncSidePanelWidths: _f$syncSidePanelWidths,
     #pasteButtonOpacity: _f$pasteButtonOpacity,
     #pasteButtonGradientSpan: _f$pasteButtonGradientSpan,
+    #sendLowerPanelBrightness: _f$sendLowerPanelBrightness,
+    #sendLowerPanelTintArgb: _f$sendLowerPanelTintArgb,
   };
 
   static SettingsState _instantiate(DecodingData data) {
@@ -147,7 +153,9 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
         navigationPanelWidth: data.dec(_f$navigationPanelWidth),
         syncSidePanelWidths: data.dec(_f$syncSidePanelWidths),
         pasteButtonOpacity: data.dec(_f$pasteButtonOpacity),
-        pasteButtonGradientSpan: data.dec(_f$pasteButtonGradientSpan));
+        pasteButtonGradientSpan: data.dec(_f$pasteButtonGradientSpan),
+        sendLowerPanelBrightness: data.dec(_f$sendLowerPanelBrightness),
+        sendLowerPanelTintArgb: data.dec(_f$sendLowerPanelTintArgb));
   }
 
   @override
@@ -225,7 +233,9 @@ abstract class SettingsStateCopyWith<$R, $In extends SettingsState, $Out> implem
       double? navigationPanelWidth,
       bool? syncSidePanelWidths,
       double? pasteButtonOpacity,
-      double? pasteButtonGradientSpan});
+      double? pasteButtonGradientSpan,
+      double? sendLowerPanelBrightness,
+      int? sendLowerPanelTintArgb});
   SettingsStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -266,7 +276,9 @@ class _SettingsStateCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Setting
           double? navigationPanelWidth,
           bool? syncSidePanelWidths,
           double? pasteButtonOpacity,
-          double? pasteButtonGradientSpan}) =>
+          double? pasteButtonGradientSpan,
+          double? sendLowerPanelBrightness,
+          int? sendLowerPanelTintArgb}) =>
       $apply(FieldCopyWithData({
         if (showToken != null) #showToken: showToken,
         if (alias != null) #alias: alias,
@@ -297,7 +309,9 @@ class _SettingsStateCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Setting
         if (navigationPanelWidth != null) #navigationPanelWidth: navigationPanelWidth,
         if (syncSidePanelWidths != null) #syncSidePanelWidths: syncSidePanelWidths,
         if (pasteButtonOpacity != null) #pasteButtonOpacity: pasteButtonOpacity,
-        if (pasteButtonGradientSpan != null) #pasteButtonGradientSpan: pasteButtonGradientSpan
+        if (pasteButtonGradientSpan != null) #pasteButtonGradientSpan: pasteButtonGradientSpan,
+        if (sendLowerPanelBrightness != null) #sendLowerPanelBrightness: sendLowerPanelBrightness,
+        if (sendLowerPanelTintArgb != null) #sendLowerPanelTintArgb: sendLowerPanelTintArgb
       }));
   @override
   SettingsState $make(CopyWithData data) => SettingsState(
@@ -330,7 +344,9 @@ class _SettingsStateCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Setting
       navigationPanelWidth: data.get(#navigationPanelWidth, or: $value.navigationPanelWidth),
       syncSidePanelWidths: data.get(#syncSidePanelWidths, or: $value.syncSidePanelWidths),
       pasteButtonOpacity: data.get(#pasteButtonOpacity, or: $value.pasteButtonOpacity),
-      pasteButtonGradientSpan: data.get(#pasteButtonGradientSpan, or: $value.pasteButtonGradientSpan));
+      pasteButtonGradientSpan: data.get(#pasteButtonGradientSpan, or: $value.pasteButtonGradientSpan),
+      sendLowerPanelBrightness: data.get(#sendLowerPanelBrightness, or: $value.sendLowerPanelBrightness),
+      sendLowerPanelTintArgb: data.get(#sendLowerPanelTintArgb, or: $value.sendLowerPanelTintArgb));
 
   @override
   SettingsStateCopyWith<$R2, SettingsState, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) => _SettingsStateCopyWithImpl($value, $cast, t);

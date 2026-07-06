@@ -6,10 +6,14 @@ import 'package:localsend_app/widget/app_rounded_button_style.dart';
 /// Frosted-glass lower send panel overlay on the transfer tab.
 class TransferLowerGlassPanel extends StatelessWidget {
   final double opacity;
+  final double brightness;
+  final int tintArgb;
   final Widget child;
 
   const TransferLowerGlassPanel({
     required this.opacity,
+    this.brightness = 0,
+    this.tintArgb = 0,
     required this.child,
   });
 
@@ -18,13 +22,19 @@ class TransferLowerGlassPanel extends StatelessWidget {
     const radius = kAppRoundedButtonRadius;
     final scheme = Theme.of(context).colorScheme;
 
+    final baseTint = tintArgb == 0 ? scheme.surface : Color(tintArgb);
+    var fill = baseTint.withOpacity(opacity.clamp(0.15, 0.95));
+    if (brightness > 0) {
+      fill = Color.lerp(fill, Colors.white, brightness.clamp(0.0, 0.85))!;
+    }
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: scheme.surface.withOpacity(opacity.clamp(0.15, 0.95)),
+            color: fill,
             borderRadius: BorderRadius.circular(radius),
             border: Border.all(color: scheme.outlineVariant.withOpacity(0.45)),
           ),

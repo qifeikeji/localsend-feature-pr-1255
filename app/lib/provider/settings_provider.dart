@@ -48,6 +48,8 @@ class SettingsService extends PureNotifier<SettingsState> {
         syncSidePanelWidths: _persistence.getSyncSidePanelWidths(),
         pasteButtonOpacity: _persistence.getPasteButtonOpacity(),
         pasteButtonGradientSpan: _persistence.getPasteButtonGradientSpan(),
+        sendLowerPanelBrightness: _persistence.getSendLowerPanelBrightness(),
+        sendLowerPanelTintArgb: _persistence.getSendLowerPanelTintArgb(),
       );
 
   Future<void> setAlias(String alias) async {
@@ -264,5 +266,16 @@ class SettingsService extends PureNotifier<SettingsState> {
     final clamped = value.clamp(0.0, 1.0);
     await _persistence.setPasteButtonGradientSpan(clamped);
     state = state.copyWith(pasteButtonGradientSpan: clamped);
+  }
+
+  Future<void> setSendLowerPanelBrightness(double value) async {
+    final clamped = value.clamp(0.0, 0.85);
+    await _persistence.setSendLowerPanelBrightness(clamped);
+    state = state.copyWith(sendLowerPanelBrightness: clamped);
+  }
+
+  Future<void> setSendLowerPanelTintArgb(int argb) async {
+    await _persistence.setSendLowerPanelTintArgb(argb);
+    state = state.copyWith(sendLowerPanelTintArgb: argb);
   }
 }

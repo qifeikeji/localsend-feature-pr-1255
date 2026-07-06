@@ -528,6 +528,12 @@ class _StringsSettingsTabReceiveZhCn extends _StringsSettingsTabReceiveEn {
 	@override String get saveToGallery => '保存到相册';
 	@override String get saveToHistory => '保存到历史记录';
 	@override String get sendLowerPanelOpacity => '发送区面板不透明度';
+	@override String get sendLowerPanelBrightness => '发送区面板亮度';
+	@override String get sendLowerPanelColor => '发送区面板颜色';
+	@override String get sendLowerPanelColorHue => '色相';
+	@override String get sendLowerPanelColorSaturation => '饱和度';
+	@override String get sendLowerPanelColorLightness => '明度';
+	@override String get sendLowerPanelColorDefault => '跟随主题';
 	@override String get pasteButtonOpacity => '粘贴按钮不透明度';
 	@override String get pasteButtonGradientSpan => '粘贴按钮渐变对比度';
 }

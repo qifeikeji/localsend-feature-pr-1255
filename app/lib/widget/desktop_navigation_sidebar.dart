@@ -62,6 +62,7 @@ class DesktopNavigationSidebar extends StatelessWidget {
             );
           }),
           if (currentTab == HomeTab.transfer) ...[
+            const SizedBox(height: kRailTileOuterVerticalPadding),
             const Divider(height: 1),
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),

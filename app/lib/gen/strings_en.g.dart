@@ -604,6 +604,12 @@ class _StringsSettingsTabReceiveEn {
 	String get saveToGallery => 'Save media to gallery';
 	String get saveToHistory => 'Save to history';
 	String get sendLowerPanelOpacity => 'Send panel opacity';
+	String get sendLowerPanelBrightness => 'Send panel brightness';
+	String get sendLowerPanelColor => 'Send panel color';
+	String get sendLowerPanelColorHue => 'Hue';
+	String get sendLowerPanelColorSaturation => 'Saturation';
+	String get sendLowerPanelColorLightness => 'Lightness';
+	String get sendLowerPanelColorDefault => 'Theme default';
 	String get pasteButtonOpacity => 'Paste button opacity';
 	String get pasteButtonGradientSpan => 'Paste button gradient contrast';
 }

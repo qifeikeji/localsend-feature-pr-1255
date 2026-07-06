@@ -74,6 +74,8 @@ const _navigationPanelWidth = 'ls_navigation_panel_width';
 const _syncSidePanelWidths = 'ls_sync_side_panel_widths';
 const _pasteButtonOpacity = 'ls_paste_button_opacity';
 const _pasteButtonGradientSpan = 'ls_paste_button_gradient_span';
+const _sendLowerPanelBrightness = 'ls_send_lower_panel_brightness';
+const _sendLowerPanelTintArgb = 'ls_send_lower_panel_tint_argb';
 const _startupWindowWidth = 'ls_startup_window_width';
 const _startupWindowHeight = 'ls_startup_window_height';
 
@@ -483,6 +485,22 @@ class PersistenceService {
 
   Future<void> setPasteButtonGradientSpan(double value) async {
     await _prefs.setDouble(_pasteButtonGradientSpan, value);
+  }
+
+  double getSendLowerPanelBrightness() {
+    return _prefs.getDouble(_sendLowerPanelBrightness) ?? 0.25;
+  }
+
+  Future<void> setSendLowerPanelBrightness(double value) async {
+    await _prefs.setDouble(_sendLowerPanelBrightness, value);
+  }
+
+  int getSendLowerPanelTintArgb() {
+    return _prefs.getInt(_sendLowerPanelTintArgb) ?? 0;
+  }
+
+  Future<void> setSendLowerPanelTintArgb(int argb) async {
+    await _prefs.setInt(_sendLowerPanelTintArgb, argb);
   }
 
   Future<void> clear() async {

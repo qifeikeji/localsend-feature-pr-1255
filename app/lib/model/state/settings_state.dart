@@ -39,6 +39,8 @@ class SettingsState with SettingsStateMappable {
   final bool syncSidePanelWidths;
   final double pasteButtonOpacity;
   final double pasteButtonGradientSpan;
+  final double sendLowerPanelBrightness;
+  final int sendLowerPanelTintArgb;
 
   const SettingsState({
     required this.showToken,
@@ -71,5 +73,7 @@ class SettingsState with SettingsStateMappable {
     required this.syncSidePanelWidths,
     required this.pasteButtonOpacity,
     required this.pasteButtonGradientSpan,
+    required this.sendLowerPanelBrightness,
+    required this.sendLowerPanelTintArgb,
   });
 }

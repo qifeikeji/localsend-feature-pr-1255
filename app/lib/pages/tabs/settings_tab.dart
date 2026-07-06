@@ -18,6 +18,7 @@ import 'package:localsend_app/util/native/platform_check.dart';
 import 'package:localsend_app/widget/custom_dropdown_button.dart';
 import 'package:localsend_app/widget/dialogs/encryption_disabled_notice.dart';
 import 'package:localsend_app/widget/dialogs/quick_save_notice.dart';
+import 'package:localsend_app/widget/dialogs/send_panel_color_picker_dialog.dart';
 import 'package:localsend_app/widget/dialogs/text_field_tv.dart';
 import 'package:localsend_app/widget/labeled_checkbox.dart';
 import 'package:localsend_app/widget/local_send_logo.dart';
@@ -199,6 +200,68 @@ class SettingsTab extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                     ],
+                  ),
+                ),
+                _SettingsEntry(
+                  label: t.settingsTab.receive.sendLowerPanelBrightness,
+                  child: Column(
+                    children: [
+                      Slider(
+                        value: vm.settings.sendLowerPanelBrightness,
+                        min: 0,
+                        max: 0.85,
+                        onChanged: (v) async {
+                          await ref.notifier(settingsProvider).setSendLowerPanelBrightness(v);
+                        },
+                      ),
+                      Text(
+                        '${(vm.settings.sendLowerPanelBrightness * 100).round()}%',
+                        style: Theme.of(context).textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                _SettingsEntry(
+                  label: t.settingsTab.receive.sendLowerPanelColor,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(context).inputDecorationTheme.fillColor,
+                      shape: RoundedRectangleBorder(borderRadius: Theme.of(context).inputDecorationTheme.borderRadius),
+                      foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    onPressed: () async {
+                      final scheme = Theme.of(context).colorScheme;
+                      final initial = vm.settings.sendLowerPanelTintArgb == 0
+                          ? scheme.surface
+                          : Color(vm.settings.sendLowerPanelTintArgb);
+                      final picked = await SendPanelColorPickerDialog.open(context, initial);
+                      if (picked != null && context.mounted) {
+                        await ref.notifier(settingsProvider).setSendLowerPanelTintArgb(picked.value);
+                      }
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: vm.settings.sendLowerPanelTintArgb == 0
+                                ? Theme.of(context).colorScheme.surface
+                                : Color(vm.settings.sendLowerPanelTintArgb),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Theme.of(context).dividerColor),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          vm.settings.sendLowerPanelTintArgb == 0
+                              ? t.settingsTab.receive.sendLowerPanelColorDefault
+                              : '#${vm.settings.sendLowerPanelTintArgb.toRadixString(16).padLeft(8, '0').toUpperCase()}',
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 _SettingsEntry(

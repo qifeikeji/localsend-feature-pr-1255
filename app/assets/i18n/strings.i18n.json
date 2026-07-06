@@ -127,6 +127,12 @@
       "saveToGallery": "Save media to gallery",
       "saveToHistory": "Save to history",
       "sendLowerPanelOpacity": "Send panel opacity",
+      "sendLowerPanelBrightness": "Send panel brightness",
+      "sendLowerPanelColor": "Send panel color",
+      "sendLowerPanelColorHue": "Hue",
+      "sendLowerPanelColorSaturation": "Saturation",
+      "sendLowerPanelColorLightness": "Lightness",
+      "sendLowerPanelColorDefault": "Theme default",
       "pasteButtonOpacity": "Paste button opacity",
       "pasteButtonGradientSpan": "Paste button gradient contrast"
     },

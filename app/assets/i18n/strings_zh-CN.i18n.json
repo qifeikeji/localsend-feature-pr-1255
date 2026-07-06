@@ -127,6 +127,12 @@
       "saveToGallery": "保存到相册",
       "saveToHistory": "保存到历史记录",
       "sendLowerPanelOpacity": "发送区面板不透明度",
+      "sendLowerPanelBrightness": "发送区面板亮度",
+      "sendLowerPanelColor": "发送区面板颜色",
+      "sendLowerPanelColorHue": "色相",
+      "sendLowerPanelColorSaturation": "饱和度",
+      "sendLowerPanelColorLightness": "明度",
+      "sendLowerPanelColorDefault": "跟随主题",
       "pasteButtonOpacity": "粘贴按钮不透明度",
       "pasteButtonGradientSpan": "粘贴按钮渐变对比度"
     },
