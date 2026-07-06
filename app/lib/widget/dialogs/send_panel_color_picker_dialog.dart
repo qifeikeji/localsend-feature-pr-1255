@@ -43,7 +43,7 @@ class _SendPanelColorPickerDialogState extends State<SendPanelColorPickerDialog>
     _color = widget.initialColor;
   }
 
-  void _setHsl(void Function(HSLColor hsl) fn) {
+  void _setHsl(HSLColor Function(HSLColor hsl) fn) {
     setState(() {
       _color = fn(HSLColor.fromColor(_color)).toColor();
     });
