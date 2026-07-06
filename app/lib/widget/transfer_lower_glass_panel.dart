@@ -58,7 +58,7 @@ class SettingsStyleSwitchRow extends StatelessWidget {
           value: value,
           onChanged: onChanged,
           activeTrackColor: theme.colorScheme.primary,
-          activeThumbColor: theme.colorScheme.onPrimary,
+          activeColor: theme.colorScheme.onPrimary,
           inactiveThumbColor: theme.colorScheme.outline,
           inactiveTrackColor: theme.colorScheme.surface,
         ),
