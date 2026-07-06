@@ -1,31 +1,14 @@
+name: Build Linux AppImage
+
 on:
   push:
-    branches:
-      - main
   workflow_dispatch:
 
 env:
   FLUTTER_VERSION: "3.13.9"
-  APK_BUILD_DIR: "/tmp/build"
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Get version from pubspec.yaml
-        id: get_version
-        working-directory: app
-        run: |
-          VERSION=$(sed -n 's/^version: \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' pubspec.yaml)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-  build_appimage:
-    needs: build
     runs-on: ubuntu-20.04
 
     steps:
@@ -41,11 +24,18 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
 
+      - name: Get version
+        id: version
+        working-directory: app
+        run: |
+          VERSION=$(sed -n 's/^version: \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' pubspec.yaml)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Dependencies
         working-directory: app
         run: flutter pub get
 
-      - name: Compile linux
+      - name: Compile linux (x64)
         working-directory: app
         run: flutter build linux
 
@@ -63,7 +53,7 @@ jobs:
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
           cp app/assets/img/logo-256.png AppDir/usr/share/icons/hicolor/256x256/apps/localsend.png
 
-      - name: Copy Recipe to correct location
+      - name: Copy AppImage recipe
         run: cp scripts/appimage/AppImageBuilder_x86_64.yml AppImageBuilder.yml
 
       - name: Build AppImage
@@ -71,8 +61,13 @@ jobs:
         with:
           recipe: ./AppImageBuilder.yml
 
-      - name: Upload AppImage file
+      - name: Rename AppImage with version
+        run: |
+          APPIMAGE=$(find . -maxdepth 1 -name '*.AppImage' ! -name '*.AppImage.zsync' | head -1)
+          mv "$APPIMAGE" "LocalSend-${{ steps.version.outputs.version }}-linux-x86_64.AppImage"
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: appimage-x86-64-result
-          path: ./*.AppImage
+          name: linux-appimage-x86_64
+          path: LocalSend-${{ steps.version.outputs.version }}-linux-x86_64.AppImage

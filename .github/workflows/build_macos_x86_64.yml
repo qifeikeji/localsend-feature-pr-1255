@@ -1,0 +1,54 @@
+name: Build macOS x86_64
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: "3.13.9"
+
+jobs:
+  build:
+    # Intel runner: native x86_64 macOS build
+    runs-on: macos-13
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+
+      - name: Get version
+        id: version
+        working-directory: app
+        run: |
+          VERSION=$(sed -n 's/^version: \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' pubspec.yaml)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: CocoaPods
+        working-directory: app/macos
+        run: pod install
+
+      - name: Compile macOS (x86_64)
+        working-directory: app
+        run: flutter build macos --release
+
+      - name: Zip app bundle
+        working-directory: app
+        run: |
+          ZIP="LocalSend-${{ steps.version.outputs.version }}-macos-x86_64.zip"
+          ditto -c -k --sequesterRsrc --keepParent \
+            build/macos/Build/Products/Release/LocalSend.app "$ZIP"
+          echo "ZIP_NAME=$ZIP" >> $GITHUB_ENV
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-x86_64
+          path: app/${{ env.ZIP_NAME }}

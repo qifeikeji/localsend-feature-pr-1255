@@ -1,0 +1,56 @@
+name: Build Windows x86_64
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: "3.13.9"
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Fix long file paths
+        run: git config --system core.longpaths true
+
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+
+      - name: Get version
+        id: version
+        working-directory: app
+        shell: bash
+        run: |
+          VERSION=$(sed -n 's/^version: \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' pubspec.yaml)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: Compile for Windows (x64)
+        working-directory: app
+        run: flutter build windows
+
+      - name: Create empty settings.json
+        working-directory: app
+        run: echo {} > build/windows/x64/runner/Release/settings.json
+
+      - name: Zip release
+        working-directory: app
+        run: |
+          $zip = "LocalSend-${{ steps.version.outputs.version }}-windows-x86_64.zip"
+          Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath $zip -Force
+          echo "ZIP_NAME=$zip" >> $env:GITHUB_ENV
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x86_64
+          path: app/${{ env.ZIP_NAME }}
