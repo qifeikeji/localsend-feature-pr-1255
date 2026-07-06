@@ -7,6 +7,7 @@ import 'package:localsend_app/pages/changelog_page.dart';
 import 'package:localsend_app/pages/donation/donation_page.dart';
 import 'package:localsend_app/pages/language_page.dart';
 import 'package:localsend_app/pages/tabs/settings_tab_controller.dart';
+import 'package:localsend_app/provider/persistence_provider.dart';
 import 'package:localsend_app/provider/settings_provider.dart';
 import 'package:localsend_app/provider/version_provider.dart';
 import 'package:localsend_app/theme.dart';
@@ -91,7 +92,8 @@ class SettingsTab extends StatelessWidget {
                         await ref.notifier(settingsProvider).setSaveWindowPlacement(b);
                       },
                     ),
-                  if (checkPlatformHasTray()) ...[
+                  const _DesktopLayoutSettings(),
+                  if (checkPlatformHasTray())
                     _BooleanEntry(
                       label: t.settingsTab.general.minimizeToTray,
                       value: vm.settings.minimizeToTray,
@@ -99,7 +101,6 @@ class SettingsTab extends StatelessWidget {
                         await ref.notifier(settingsProvider).setMinimizeToTray(b);
                       },
                     ),
-                  ],
                   // Linux autostart is simpler, so a boolean entry is used
                   if (_isLinux)
                     _BooleanEntry(
@@ -179,6 +180,26 @@ class SettingsTab extends StatelessWidget {
                       await QuickSaveNotice.open(context);
                     }
                   },
+                ),
+                _SettingsEntry(
+                  label: t.settingsTab.receive.sendLowerPanelOpacity,
+                  child: Column(
+                    children: [
+                      Slider(
+                        value: vm.settings.sendLowerPanelOpacity,
+                        min: 0.15,
+                        max: 0.95,
+                        onChanged: (v) async {
+                          await ref.notifier(settingsProvider).setSendLowerPanelOpacity(v);
+                        },
+                      ),
+                      Text(
+                        '${(vm.settings.sendLowerPanelOpacity * 100).round()}%',
+                        style: Theme.of(context).textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
                 if (checkPlatformWithFileSystem())
                   _SettingsEntry(
@@ -311,6 +332,24 @@ class SettingsTab extends StatelessWidget {
                     },
                   ),
                 ),
+                _SettingsEntry(
+                  label: t.settingsTab.network.knownDeviceIps,
+                  child: TextFieldTv(
+                    name: t.settingsTab.network.knownDeviceIps,
+                    controller: vm.knownDeviceIpsController,
+                    maxLines: 8,
+                    onChanged: (s) async {
+                      await ref.notifier(settingsProvider).setKnownDeviceIps(s);
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 15),
+                  child: Text(
+                    t.settingsTab.network.knownDeviceIpsHint,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ),
                 if (vm.advanced)
                   _SettingsEntry(
                     label: t.settingsTab.network.deviceType,
@@ -374,26 +413,6 @@ class SettingsTab extends StatelessWidget {
                       onChanged: (s) async {
                         await ref.notifier(settingsProvider).setMulticastGroup(s);
                       },
-                    ),
-                  ),
-                if (vm.advanced)
-                  _SettingsEntry(
-                    label: t.settingsTab.network.knownDeviceIps,
-                    child: TextFieldTv(
-                      name: t.settingsTab.network.knownDeviceIps,
-                      controller: vm.knownDeviceIpsController,
-                      maxLines: 8,
-                      onChanged: (s) async {
-                        await ref.notifier(settingsProvider).setKnownDeviceIps(s);
-                      },
-                    ),
-                  ),
-                if (vm.advanced)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15),
-                    child: Text(
-                      t.settingsTab.network.knownDeviceIpsHint,
-                      style: const TextStyle(color: Colors.grey),
                     ),
                   ),
                 AnimatedCrossFade(
@@ -646,6 +665,100 @@ class _SettingsSection extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _DesktopLayoutSettings extends StatefulWidget {
+  const _DesktopLayoutSettings();
+
+  @override
+  State<_DesktopLayoutSettings> createState() => _DesktopLayoutSettingsState();
+}
+
+class _DesktopLayoutSettingsState extends State<_DesktopLayoutSettings> with Refena {
+  late final TextEditingController _widthController;
+  late final TextEditingController _heightController;
+  late final TextEditingController _historyWidthController;
+  var _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) {
+      return;
+    }
+    _initialized = true;
+    final persistence = ref.read(persistenceProvider);
+    _widthController = TextEditingController(text: '${persistence.getStartupWindowWidth().round()}');
+    _heightController = TextEditingController(text: '${persistence.getStartupWindowHeight().round()}');
+    _historyWidthController = TextEditingController(text: '${ref.read(settingsProvider).historyPanelWidth.round()}');
+  }
+
+  @override
+  void dispose() {
+    if (_initialized) {
+      _widthController.dispose();
+      _heightController.dispose();
+      _historyWidthController.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_initialized) {
+      return const SizedBox.shrink();
+    }
+    return Column(
+      children: [
+        _SettingsEntry(
+          label: t.settingsTab.general.startupWindowWidth,
+          child: TextFieldTv(
+            name: t.settingsTab.general.startupWindowWidth,
+            controller: _widthController,
+            onChanged: (s) async {
+              final v = double.tryParse(s.trim());
+              if (v != null) {
+                await ref.notifier(settingsProvider).setStartupWindowWidth(v);
+              }
+            },
+          ),
+        ),
+        _SettingsEntry(
+          label: t.settingsTab.general.startupWindowHeight,
+          child: TextFieldTv(
+            name: t.settingsTab.general.startupWindowHeight,
+            controller: _heightController,
+            onChanged: (s) async {
+              final v = double.tryParse(s.trim());
+              if (v != null) {
+                await ref.notifier(settingsProvider).setStartupWindowHeight(v);
+              }
+            },
+          ),
+        ),
+        _SettingsEntry(
+          label: t.settingsTab.general.historyPanelWidth,
+          child: TextFieldTv(
+            name: t.settingsTab.general.historyPanelWidth,
+            controller: _historyWidthController,
+            onChanged: (s) async {
+              final v = double.tryParse(s.trim());
+              if (v != null) {
+                await ref.notifier(settingsProvider).setHistoryPanelWidth(v);
+              }
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 15),
+          child: Text(
+            t.settingsTab.general.historyPanelWidthHint,
+            style: const TextStyle(color: Colors.grey),
+          ),
+        ),
+      ],
     );
   }
 }

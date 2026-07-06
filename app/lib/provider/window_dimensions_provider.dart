@@ -1,5 +1,7 @@
 import 'dart:ui';
+
 import 'package:localsend_app/provider/persistence_provider.dart';
+import 'package:localsend_app/util/native/platform_check.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
@@ -12,7 +14,6 @@ final windowDimensionProvider = Provider<WindowDimensionsController>((ref) {
 });
 
 const Size _minimalSize = Size(400, 500);
-const Size _defaultSize = Size(900, 600);
 
 class WindowDimensionsController {
   final PersistenceService _service;
@@ -22,8 +23,6 @@ class WindowDimensionsController {
   /// Sets window position & size according to saved settings.
   Future<void> initDimensionsConfiguration() async {
     await WindowManager.instance.setMinimumSize(_minimalSize);
-    final primaryDisplay = await ScreenRetriever.instance.getPrimaryDisplay();
-    final hasEnoughWidth = (primaryDisplay.visibleSize ?? primaryDisplay.size).width >= 1200;
 
     // load saved Window placement and preferences
     final useSavedPlacement = _service.getSaveWindowPlacement();
@@ -36,11 +35,13 @@ class WindowDimensionsController {
     // Checks if the last known position is valid
     bool foundInScreen = await isInScreenBounds(persistedOffset);
 
+    final configuredSize = _configuredStartupSize();
+
     // settings applied accordingly if [save option is enabled] and if [persisted values are valid]
     if (foundInScreen) {
-      await WindowManager.instance.setSize(persistedSize ?? (hasEnoughWidth ? _defaultSize : _minimalSize));
+      await WindowManager.instance.setSize(persistedSize ?? configuredSize);
     } else {
-      await WindowManager.instance.setSize(hasEnoughWidth ? _defaultSize : _minimalSize);
+      await WindowManager.instance.setSize(configuredSize);
     }
 
     if (persistedOffset == null || !foundInScreen) {
@@ -90,5 +91,15 @@ class WindowDimensionsController {
   Future<void> storeSize({required Size windowSize}) async {
     await _service.setWindowHeight(windowSize.height);
     await _service.setWindowWidth(windowSize.width);
+  }
+
+  /// Window size on first launch (or when saved placement is off), including history panel reserve on desktop.
+  Size _configuredStartupSize() {
+    var width = _service.getStartupWindowWidth().clamp(_minimalSize.width, 4096.0);
+    final height = _service.getStartupWindowHeight().clamp(_minimalSize.height, 4096.0);
+    if (checkPlatformIsDesktop() && _service.getHistoryPanelVisible()) {
+      width += _service.getHistoryPanelWidth() + 4;
+    }
+    return Size(width, height);
   }
 }

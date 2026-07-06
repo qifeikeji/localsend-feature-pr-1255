@@ -43,6 +43,7 @@ class SettingsService extends PureNotifier<SettingsState> {
         historyPanelWidth: _persistence.getHistoryPanelWidth(),
         historyPanelVisible: _persistence.getHistoryPanelVisible(),
         knownDeviceIps: _persistence.getKnownDeviceIps(),
+        sendLowerPanelOpacity: _persistence.getSendLowerPanelOpacity(),
       );
 
   Future<void> setAlias(String alias) async {
@@ -207,5 +208,21 @@ class SettingsService extends PureNotifier<SettingsState> {
   Future<void> setKnownDeviceIps(String ips) async {
     await _persistence.setKnownDeviceIps(ips);
     state = state.copyWith(knownDeviceIps: ips);
+  }
+
+  Future<void> setStartupWindowWidth(double width) async {
+    final clamped = width.clamp(400.0, 4096.0);
+    await _persistence.setStartupWindowWidth(clamped);
+  }
+
+  Future<void> setStartupWindowHeight(double height) async {
+    final clamped = height.clamp(500.0, 4096.0);
+    await _persistence.setStartupWindowHeight(clamped);
+  }
+
+  Future<void> setSendLowerPanelOpacity(double opacity) async {
+    final clamped = opacity.clamp(0.15, 0.95);
+    await _persistence.setSendLowerPanelOpacity(clamped);
+    state = state.copyWith(sendLowerPanelOpacity: clamped);
   }
 }

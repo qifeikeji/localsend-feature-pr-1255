@@ -12,7 +12,7 @@ import 'package:localsend_app/provider/ui/home_tab_provider.dart';
 import 'package:localsend_app/theme.dart';
 import 'package:localsend_app/util/incoming_items_handler.dart';
 import 'package:localsend_app/util/native/platform_check.dart';
-import 'package:localsend_app/widget/nearby_devices_rail.dart';
+import 'package:localsend_app/widget/desktop_navigation_sidebar.dart';
 import 'package:localsend_app/widget/panels/receive_history_panel.dart';
 import 'package:localsend_app/widget/responsive_builder.dart';
 import 'package:refena_flutter/refena_flutter.dart';
@@ -147,36 +147,13 @@ class _HomePageState extends State<HomePage> with Refena {
             body: Row(
               children: [
                 if (!sizingInformation.isMobile)
-                  NavigationRail(
-                    selectedIndex: _currentTab.index,
-                    onDestinationSelected: _goToPage,
-                    extended: sizingInformation.isDesktop,
-                    backgroundColor: Theme.of(context).cardColorWithElevation,
-                    leading: sizingInformation.isDesktop
-                        ? const Column(
-                            children: [
-                              SizedBox(height: 20),
-                              Text(
-                                'LocalSend',
-                                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height: 20),
-                            ],
-                          )
-                        : null,
-                    destinations: HomeTab.values.map((tab) {
-                      return NavigationRailDestination(
-                        icon: Icon(tab.icon),
-                        label: Text(tab.label),
-                      );
-                    }).toList(),
-                    trailing: _currentTab == HomeTab.transfer
-                        ? SizedBox(
-                            width: sizingInformation.isDesktop ? 180 : 72,
-                            child: NearbyDevicesRail(extended: sizingInformation.isDesktop),
-                          )
-                        : null,
+                  SizedBox(
+                    width: sizingInformation.isDesktop ? 180 : 72,
+                    child: DesktopNavigationSidebar(
+                      extended: sizingInformation.isDesktop,
+                      currentTab: _currentTab,
+                      onTabSelected: _goToPage,
+                    ),
                   ),
                 Expanded(
                   child: SafeArea(

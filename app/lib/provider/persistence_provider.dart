@@ -69,6 +69,9 @@ const _shareViaLinkAutoAccept = 'ls_share_via_link_auto_accept';
 const _historyPanelWidth = 'ls_history_panel_width';
 const _historyPanelVisible = 'ls_history_panel_visible';
 const _knownDeviceIps = 'ls_known_device_ips';
+const _sendLowerPanelOpacity = 'ls_send_lower_panel_opacity';
+const _startupWindowWidth = 'ls_startup_window_width';
+const _startupWindowHeight = 'ls_startup_window_height';
 
 final persistenceProvider = Provider<PersistenceService>((ref) {
   throw Exception('persistenceProvider not initialized');
@@ -420,6 +423,30 @@ class PersistenceService {
 
   Future<void> setKnownDeviceIps(String ips) async {
     await _prefs.setString(_knownDeviceIps, ips);
+  }
+
+  double getStartupWindowWidth() {
+    return _prefs.getDouble(_startupWindowWidth) ?? 900;
+  }
+
+  Future<void> setStartupWindowWidth(double width) async {
+    await _prefs.setDouble(_startupWindowWidth, width);
+  }
+
+  double getStartupWindowHeight() {
+    return _prefs.getDouble(_startupWindowHeight) ?? 600;
+  }
+
+  Future<void> setStartupWindowHeight(double height) async {
+    await _prefs.setDouble(_startupWindowHeight, height);
+  }
+
+  double getSendLowerPanelOpacity() {
+    return _prefs.getDouble(_sendLowerPanelOpacity) ?? 0.72;
+  }
+
+  Future<void> setSendLowerPanelOpacity(double opacity) async {
+    await _prefs.setDouble(_sendLowerPanelOpacity, opacity);
   }
 
   Future<void> clear() async {

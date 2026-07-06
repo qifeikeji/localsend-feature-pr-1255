@@ -581,6 +581,10 @@ class _StringsSettingsTabGeneralEn {
 	String get launchAtStartup => 'Autostart after login';
 	String get launchMinimized => 'Autostart: Start hidden';
 	String get animations => 'Animations';
+	String get startupWindowWidth => 'Startup window width';
+	String get startupWindowHeight => 'Startup window height';
+	String get historyPanelWidth => 'History panel width';
+	String get historyPanelWidthHint => 'Used when the receive history panel is visible. The startup window width also reserves this space on launch.';
 }
 
 // Path: settingsTab.receive
@@ -597,6 +601,7 @@ class _StringsSettingsTabReceiveEn {
 	String get downloads => '(Downloads)';
 	String get saveToGallery => 'Save media to gallery';
 	String get saveToHistory => 'Save to history';
+	String get sendLowerPanelOpacity => 'Send panel opacity';
 }
 
 // Path: settingsTab.send

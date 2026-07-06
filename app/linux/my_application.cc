@@ -47,7 +47,7 @@ static void my_application_activate(GApplication* application) {
     gtk_window_set_title(window, "LocalSend");
   }
 
-  gtk_window_set_default_size(window, 400, 500);
+  gtk_window_set_default_size(window, 900, 600);
 
   if (!start_hidden) {
     gtk_widget_show(GTK_WIDGET(window));

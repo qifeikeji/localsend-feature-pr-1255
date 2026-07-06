@@ -505,6 +505,10 @@ class _StringsSettingsTabGeneralZhCn extends _StringsSettingsTabGeneralEn {
 	@override String get launchAtStartup => '登录系统后自动启动程序';
 	@override String get launchMinimized => '静默自启：只启动托盘服务';
 	@override String get animations => '动画效果';
+	@override String get startupWindowWidth => '启动时窗口宽度';
+	@override String get startupWindowHeight => '启动时窗口高度';
+	@override String get historyPanelWidth => '历史侧栏宽度';
+	@override String get historyPanelWidthHint => '接收历史侧栏显示时使用。启动时会在窗口宽度中预留该侧栏空间。';
 }
 
 // Path: settingsTab.receive
@@ -521,6 +525,7 @@ class _StringsSettingsTabReceiveZhCn extends _StringsSettingsTabReceiveEn {
 	@override String get downloads => '(下载)';
 	@override String get saveToGallery => '保存到相册';
 	@override String get saveToHistory => '保存到历史记录';
+	@override String get sendLowerPanelOpacity => '发送区面板不透明度';
 }
 
 // Path: settingsTab.send

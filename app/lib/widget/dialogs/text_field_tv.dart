@@ -70,11 +70,18 @@ class _TextFieldTvState extends State<TextFieldTv> with Refena {
         ),
       );
     } else {
+      final multiline = widget.maxLines != null && widget.maxLines! > 1;
       return TextFormField(
         controller: widget.controller,
         textAlign: widget.maxLines == null || widget.maxLines == 1 ? TextAlign.center : TextAlign.start,
         onChanged: widget.onChanged,
         maxLines: widget.maxLines,
+        decoration: multiline
+            ? const InputDecoration(
+                contentPadding: EdgeInsets.fromLTRB(12, 13, 12, 10),
+                isDense: true,
+              )
+            : null,
       );
     }
   }

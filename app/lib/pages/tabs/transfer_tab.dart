@@ -21,6 +21,7 @@ import 'package:localsend_app/widget/list_tile/device_list_tile.dart';
 import 'package:localsend_app/widget/local_send_logo.dart';
 import 'package:localsend_app/widget/rotating_widget.dart';
 import 'package:localsend_app/widget/send_queue_card.dart';
+import 'package:localsend_app/widget/transfer_lower_glass_panel.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 import 'package:routerino/routerino.dart';
 import 'package:collection/collection.dart';
@@ -42,6 +43,7 @@ class TransferTab extends StatelessWidget {
         final receiveSession = ref.watch(serverProvider.select((s) => s?.session));
         final sendMap = ref.watch(sendProvider);
         final sendEntry = activeEmbeddedSendSession(sendMap);
+        final panelOpacity = ref.watch(settingsProvider.select((s) => s.sendLowerPanelOpacity));
 
         final receiveSending = receiveSession?.status == SessionStatus.sending;
         final isDesktop = MediaQuery.sizeOf(context).width >= 800;
@@ -82,98 +84,112 @@ class TransferTab extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: receiveSending && receiveSession != null
-                      ? EmbeddedReceiveSession(sessionId: receiveSession.sessionId)
-                      : _ReceiveIdleSection(vm: vm),
-                ),
-                const Divider(height: 1),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: Column(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final half = constraints.maxHeight / 2;
+                      final upper = receiveSending && receiveSession != null
+                          ? EmbeddedReceiveSession(sessionId: receiveSession.sessionId)
+                          : _ReceiveIdleSection(vm: vm);
+
+                      final lowerContent = Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (queuedFiles.isNotEmpty) SendQueueCard(files: queuedFiles),
+                                    if (sendEntry != null)
+                                      InlineSessionProgress(
+                                        sessionId: sendEntry.key,
+                                        kind: InlineSessionKind.send,
+                                      )
+                                    else if (queuedFiles.isEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Text(
+                                          t.receiveTab.sendSectionHint,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(color: Theme.of(context).colorScheme.outline),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                if (queuedFiles.isNotEmpty) SendQueueCard(files: queuedFiles),
-                                if (sendEntry != null)
-                                  InlineSessionProgress(
-                                    sessionId: sendEntry.key,
-                                    kind: InlineSessionKind.send,
-                                  )
-                                else if (queuedFiles.isEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.all(16),
-                                    child: Text(
-                                      t.receiveTab.sendSectionHint,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(color: Theme.of(context).colorScheme.outline),
-                                    ),
-                                  ),
+                                OutlinedButton.icon(
+                                  onPressed: () async {
+                                    await ref.dispatchAsync(PasteFromClipboardAction(context: context));
+                                  },
+                                  icon: const Icon(Icons.paste),
+                                  label: Text(t.receiveTab.paste),
+                                ),
+                                const SizedBox(width: 20),
+                                SettingsStyleSwitchRow(
+                                  label: t.general.quickSave,
+                                  value: vm.quickSaveSettings,
+                                  onChanged: (enable) async => vm.onSetQuickSave(context, enable),
+                                ),
                               ],
                             ),
-                          ),
+                            if (showMobileDevices) ...[
+                              const SizedBox(height: 8),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(t.sendTab.nearbyDevices, style: Theme.of(context).textTheme.titleSmall),
+                              ),
+                              SizedBox(
+                                height: 120,
+                                child: ListView(
+                                  children: sendVm.nearbyDevices.map((device) {
+                                    final fav = sendVm.favoriteDevices.firstWhereOrNull((e) => e.fingerprint == device.fingerprint);
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 4),
+                                      child: DeviceListTile(
+                                        device: device,
+                                        isFavorite: fav != null,
+                                        nameOverride: fav?.alias,
+                                        onFavoriteTap: () async => sendVm.onToggleFavorite(device),
+                                        onTap: () async {
+                                          if (sendVm.sendMode == SendMode.multiple) {
+                                            await sendVm.onTapDeviceMultiSend(context, device);
+                                          } else {
+                                            await sendVm.onTapDevice(context, device);
+                                          }
+                                        },
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
-                        Center(
-                          child: OutlinedButton.icon(
-                            onPressed: () async {
-                              await ref.dispatchAsync(PasteFromClipboardAction(context: context));
-                            },
-                            icon: const Icon(Icons.paste),
-                            label: Text(t.receiveTab.paste),
-                          ),
-                        ),
-                        if (showMobileDevices) ...[
-                          const SizedBox(height: 8),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(t.sendTab.nearbyDevices, style: Theme.of(context).textTheme.titleSmall),
-                          ),
-                          SizedBox(
-                            height: 140,
-                            child: ListView(
-                              children: sendVm.nearbyDevices.map((device) {
-                                final fav = sendVm.favoriteDevices.firstWhereOrNull((e) => e.fingerprint == device.fingerprint);
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 4),
-                                  child: DeviceListTile(
-                                    device: device,
-                                    isFavorite: fav != null,
-                                    nameOverride: fav?.alias,
-                                    onFavoriteTap: () async => sendVm.onToggleFavorite(device),
-                                    onTap: () async {
-                                      if (sendVm.sendMode == SendMode.multiple) {
-                                        await sendVm.onTapDeviceMultiSend(context, device);
-                                      } else {
-                                        await sendVm.onTapDevice(context, device);
-                                      }
-                                    },
-                                  ),
-                                );
-                              }).toList(),
+                      );
+
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Positioned.fill(child: ClipRect(child: upper)),
+                          Positioned(
+                            top: half,
+                            left: 5,
+                            right: 5,
+                            bottom: 5,
+                            child: TransferLowerGlassPanel(
+                              opacity: panelOpacity,
+                              child: lowerContent,
                             ),
                           ),
                         ],
-                        const SizedBox(height: 4),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Center(
-                    child: vm.quickSaveSettings
-                        ? ElevatedButton(
-                            onPressed: () async => vm.onSetQuickSave(context, false),
-                            child: Text('${t.general.quickSave}: ${t.general.on}'),
-                          )
-                        : TextButton(
-                            onPressed: () async => vm.onSetQuickSave(context, true),
-                            child: Text('${t.general.quickSave}: ${t.general.off}'),
-                          ),
+                      );
+                    },
                   ),
                 ),
               ],

@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/model/persistence/receive_history_entry.dart';
@@ -104,9 +103,14 @@ class ReceiveHistoryListBody extends StatelessWidget {
     Dispatcher<ReceiveHistoryService, List<ReceiveHistoryEntry>> dispatcher,
   ) async {
     final options = _optionsFor(entry);
+    final overlayBox = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final position = RelativeRect.fromRect(
+      Rect.fromLTWH(globalPosition.dx, globalPosition.dy, 1, 1),
+      Offset.zero & overlayBox.size,
+    );
     final selected = await showMenu<ReceiveHistoryEntryOption>(
       context: context,
-      position: RelativeRect.fromLTRB(globalPosition.dx, globalPosition.dy, globalPosition.dx, globalPosition.dy),
+      position: position,
       items: options
           .map(
             (e) => PopupMenuItem(
@@ -189,13 +193,9 @@ class ReceiveHistoryListBody extends StatelessWidget {
           ...entries.map((entry) {
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: hPad, vertical: compact ? 4 : 8),
-              child: Listener(
-                onPointerDown: (event) async {
-                  if (event.buttons == kSecondaryMouseButton) {
-                    final box = context.findRenderObject() as RenderBox?;
-                    final global = box?.localToGlobal(event.position) ?? event.position;
-                    await _showContextMenu(context, global, entry, dispatcher);
-                  }
+              child: GestureDetector(
+                onSecondaryTapDown: (details) async {
+                  await _showContextMenu(context, details.globalPosition, entry, dispatcher);
                 },
                 child: InkWell(
                   splashColor: Colors.transparent,

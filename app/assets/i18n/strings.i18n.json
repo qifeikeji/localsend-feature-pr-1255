@@ -110,7 +110,11 @@
       "minimizeToTray": "Quit: Minimize to Tray/Menu Bar",
       "launchAtStartup": "Autostart after login",
       "launchMinimized": "Autostart: Start hidden",
-      "animations": "Animations"
+      "animations": "Animations",
+      "startupWindowWidth": "Startup window width",
+      "startupWindowHeight": "Startup window height",
+      "historyPanelWidth": "History panel width",
+      "historyPanelWidthHint": "Used when the receive history panel is visible. The startup window width also reserves this space on launch."
     },
     "receive": {
       "title": "Receive",
@@ -119,7 +123,8 @@
       "destination": "Destination",
       "downloads": "(Downloads)",
       "saveToGallery": "Save media to gallery",
-      "saveToHistory": "Save to history"
+      "saveToHistory": "Save to history",
+      "sendLowerPanelOpacity": "Send panel opacity"
     },
     "send": {
       "title": "Send",

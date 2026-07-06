@@ -110,7 +110,11 @@
       "minimizeToTray": "关闭时：最小化到系统托盘",
       "launchAtStartup": "登录系统后自动启动程序",
       "launchMinimized": "静默自启：只启动托盘服务",
-      "animations": "动画效果"
+      "animations": "动画效果",
+      "startupWindowWidth": "启动时窗口宽度",
+      "startupWindowHeight": "启动时窗口高度",
+      "historyPanelWidth": "历史侧栏宽度",
+      "historyPanelWidthHint": "接收历史侧栏显示时使用。启动时会在窗口宽度中预留该侧栏空间。"
     },
     "receive": {
       "title": "接收",
@@ -119,7 +123,8 @@
       "destination": "保存目录",
       "downloads": "(下载)",
       "saveToGallery": "保存到相册",
-      "saveToHistory": "保存到历史记录"
+      "saveToHistory": "保存到历史记录",
+      "sendLowerPanelOpacity": "发送区面板不透明度"
     },
     "send": {
       "title": "发送",
