@@ -40,6 +40,10 @@
     "unknown": "Unknown",
     "noItemInClipboard": "No items in Clipboard"
   },
+  "transferTab": {
+    "title": "Transfer",
+    "transferLine": "{from} sends to {to}"
+  },
   "receiveTab": {
     "title": "Receive",
     "dropHint": "Drop files here or press Ctrl+V to paste text or images",

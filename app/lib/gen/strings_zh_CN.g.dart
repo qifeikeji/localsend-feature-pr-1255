@@ -29,6 +29,7 @@ class _StringsZhCn extends Translations {
 	@override String get locale => '简体中文';
 	@override String get appName => 'LocalSend';
 	@override late final _StringsGeneralZhCn general = _StringsGeneralZhCn._(_root);
+	@override late final _StringsTransferTabZhCn transferTab = _StringsTransferTabZhCn._(_root);
 	@override late final _StringsReceiveTabZhCn receiveTab = _StringsReceiveTabZhCn._(_root);
 	@override late final _StringsSendTabZhCn sendTab = _StringsSendTabZhCn._(_root);
 	@override late final _StringsSettingsTabZhCn settingsTab = _StringsSettingsTabZhCn._(_root);
@@ -95,6 +96,17 @@ class _StringsGeneralZhCn extends _StringsGeneralEn {
 	@override String get unchanged => '未更改';
 	@override String get unknown => '未知';
 	@override String get noItemInClipboard => '剪贴板中没有内容';
+}
+
+// Path: transferTab
+class _StringsTransferTabZhCn extends _StringsTransferTabEn {
+	_StringsTransferTabZhCn._(_StringsZhCn root) : this._root = root, super._(root);
+
+	@override final _StringsZhCn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => '传输';
+	@override String transferLine({required Object from, required Object to}) => '${from} 发送到 ${to}';
 }
 
 // Path: receiveTab

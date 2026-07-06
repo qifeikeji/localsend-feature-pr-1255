@@ -1,10 +1,8 @@
-import 'package:collection/collection.dart';
 import 'package:common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/model/send_mode.dart';
 import 'package:localsend_app/pages/home_page.dart';
-import 'package:localsend_app/pages/progress_session_body.dart';
 import 'package:localsend_app/pages/receive_history_page.dart';
 import 'package:localsend_app/pages/tabs/receive_tab_vm.dart';
 import 'package:localsend_app/pages/tabs/send_tab_vm.dart';
@@ -17,12 +15,14 @@ import 'package:localsend_app/provider/settings_provider.dart';
 import 'package:localsend_app/provider/ui/home_tab_provider.dart';
 import 'package:localsend_app/util/ip_helper.dart';
 import 'package:localsend_app/widget/custom_icon_button.dart';
+import 'package:localsend_app/widget/inline_session_progress.dart';
 import 'package:localsend_app/widget/list_tile/device_list_tile.dart';
 import 'package:localsend_app/widget/local_send_logo.dart';
 import 'package:localsend_app/widget/rotating_widget.dart';
 import 'package:localsend_app/widget/send_queue_card.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 import 'package:routerino/routerino.dart';
+import 'package:collection/collection.dart';
 
 class TransferTab extends StatelessWidget {
   const TransferTab();
@@ -40,11 +40,9 @@ class TransferTab extends StatelessWidget {
         final queuedFiles = ref.watch(selectedSendingFilesProvider);
         final receiveSession = ref.watch(serverProvider.select((s) => s?.session));
         final sendMap = ref.watch(sendProvider);
-        final sendId = sendMap.entries.firstWhereOrNull((e) => e.value.status == SessionStatus.sending)?.key;
+        final sendEntry = activeEmbeddedSendSession(sendMap);
 
-        final receiveActive = receiveSession?.status == SessionStatus.sending;
-        final sendActive = sendId != null;
-        final dualProgress = receiveActive && sendActive;
+        final receiveSending = receiveSession?.status == SessionStatus.sending;
         final isDesktop = MediaQuery.sizeOf(context).width >= 800;
         final historyPanelVisible = ref.watch(settingsProvider.select((s) => s.historyPanelVisible));
         final showMobileDevices = MediaQuery.sizeOf(context).width < 700;
@@ -52,147 +50,145 @@ class TransferTab extends StatelessWidget {
         return Stack(
           children: [
             Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  if (isDesktop && !historyPanelVisible)
-                    Tooltip(
-                      message: t.receiveTab.showHistoryPanel,
-                      child: CustomIconButton(
-                        onPressed: () async {
-                          await ref.notifier(settingsProvider).setHistoryPanelVisible(true);
-                        },
-                        child: const Icon(Icons.view_sidebar),
-                      ),
-                    ),
-                  if (!isDesktop || !historyPanelVisible)
-                    CustomIconButton(
-                      onPressed: () async {
-                        await context.push(() => const ReceiveHistoryPage());
-                      },
-                      child: const Icon(Icons.history),
-                    ),
-                  CustomIconButton(
-                    onPressed: vm.toggleAdvanced,
-                    child: const Icon(Icons.info),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: dualProgress ? 1 : (receiveActive ? 2 : 1),
-              child: receiveActive && receiveSession != null
-                  ? ProgressSessionBody(
-                      sessionId: receiveSession.sessionId,
-                      kind: ProgressSessionKind.receive,
-                      compact: dualProgress,
-                      closeSessionOnClose: false,
-                    )
-                  : _ReceiveIdleSection(vm: vm),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              flex: dualProgress ? 1 : (sendActive ? 2 : 1),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (sendActive && sendId != null)
-                      Expanded(
-                        child: ProgressSessionBody(
-                          sessionId: sendId,
-                          kind: ProgressSessionKind.send,
-                          compact: dualProgress,
-                          closeSessionOnClose: false,
-                        ),
-                      )
-                    else ...[
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (queuedFiles.isNotEmpty)
-                                SendQueueCard(files: queuedFiles)
-                              else
-                                Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Text(
-                                    t.receiveTab.sendSectionHint,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: Theme.of(context).colorScheme.outline),
-                                  ),
-                                ),
-                            ],
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (isDesktop && !historyPanelVisible)
+                        Tooltip(
+                          message: t.receiveTab.showHistoryPanel,
+                          child: CustomIconButton(
+                            onPressed: () async {
+                              await ref.notifier(settingsProvider).setHistoryPanelVisible(true);
+                            },
+                            child: const Icon(Icons.view_sidebar),
                           ),
                         ),
-                      ),
-                      Center(
-                        child: OutlinedButton.icon(
+                      if (!isDesktop || !historyPanelVisible)
+                        CustomIconButton(
                           onPressed: () async {
-                            await ref.dispatchAsync(PasteFromClipboardAction(context: context));
+                            await context.push(() => const ReceiveHistoryPage());
                           },
-                          icon: const Icon(Icons.paste),
-                          label: Text(t.receiveTab.paste),
+                          child: const Icon(Icons.history),
                         ),
+                      CustomIconButton(
+                        onPressed: vm.toggleAdvanced,
+                        child: const Icon(Icons.info),
                       ),
-                      if (showMobileDevices) ...[
-                        const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(t.sendTab.nearbyDevices, style: Theme.of(context).textTheme.titleSmall),
-                        ),
-                        SizedBox(
-                          height: 140,
-                          child: ListView(
-                            children: sendVm.nearbyDevices.map((device) {
-                              final fav = sendVm.favoriteDevices.firstWhereOrNull((e) => e.fingerprint == device.fingerprint);
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 4),
-                                child: DeviceListTile(
-                                  device: device,
-                                  isFavorite: fav != null,
-                                  nameOverride: fav?.alias,
-                                  onFavoriteTap: () async => sendVm.onToggleFavorite(device),
-                                  onTap: () async {
-                                    if (sendVm.sendMode == SendMode.multiple) {
-                                      await sendVm.onTapDeviceMultiSend(context, device);
-                                    } else {
-                                      await sendVm.onTapDevice(context, device);
-                                    }
-                                  },
-                                ),
-                              );
-                            }).toList(),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: _ReceiveIdleSection(vm: vm),
+                      ),
+                      if (receiveSending && receiveSession != null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                          child: InlineSessionProgress(
+                            sessionId: receiveSession.sessionId,
+                            kind: InlineSessionKind.receive,
                           ),
                         ),
-                      ],
-                      const SizedBox(height: 4),
                     ],
-                  ],
+                  ),
                 ),
-              ),
+                const Divider(height: 1),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (queuedFiles.isNotEmpty) SendQueueCard(files: queuedFiles),
+                                if (sendEntry != null)
+                                  InlineSessionProgress(
+                                    sessionId: sendEntry.key,
+                                    kind: InlineSessionKind.send,
+                                  )
+                                else if (queuedFiles.isEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      t.receiveTab.sendSectionHint,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Theme.of(context).colorScheme.outline),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              await ref.dispatchAsync(PasteFromClipboardAction(context: context));
+                            },
+                            icon: const Icon(Icons.paste),
+                            label: Text(t.receiveTab.paste),
+                          ),
+                        ),
+                        if (showMobileDevices) ...[
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(t.sendTab.nearbyDevices, style: Theme.of(context).textTheme.titleSmall),
+                          ),
+                          SizedBox(
+                            height: 140,
+                            child: ListView(
+                              children: sendVm.nearbyDevices.map((device) {
+                                final fav = sendVm.favoriteDevices.firstWhereOrNull((e) => e.fingerprint == device.fingerprint);
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 4),
+                                  child: DeviceListTile(
+                                    device: device,
+                                    isFavorite: fav != null,
+                                    nameOverride: fav?.alias,
+                                    onFavoriteTap: () async => sendVm.onToggleFavorite(device),
+                                    onTap: () async {
+                                      if (sendVm.sendMode == SendMode.multiple) {
+                                        await sendVm.onTapDeviceMultiSend(context, device);
+                                      } else {
+                                        await sendVm.onTapDevice(context, device);
+                                      }
+                                    },
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 4),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Center(
+                    child: vm.quickSaveSettings
+                        ? ElevatedButton(
+                            onPressed: () async => vm.onSetQuickSave(context, false),
+                            child: Text('${t.general.quickSave}: ${t.general.on}'),
+                          )
+                        : TextButton(
+                            onPressed: () async => vm.onSetQuickSave(context, true),
+                            child: Text('${t.general.quickSave}: ${t.general.off}'),
+                          ),
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Center(
-                child: vm.quickSaveSettings
-                    ? ElevatedButton(
-                        onPressed: () async => vm.onSetQuickSave(context, false),
-                        child: Text('${t.general.quickSave}: ${t.general.on}'),
-                      )
-                    : TextButton(
-                        onPressed: () async => vm.onSetQuickSave(context, true),
-                        child: Text('${t.general.quickSave}: ${t.general.off}'),
-                      ),
-              ),
-            ),
-          ],
-        ),
             if (vm.showAdvanced)
               Positioned(
                 top: 48,

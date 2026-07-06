@@ -28,7 +28,7 @@ enum HomeTab {
   String get label {
     switch (this) {
       case HomeTab.transfer:
-        return t.receiveTab.title;
+        return t.transferTab.title;
       case HomeTab.settings:
         return t.settingsTab.title;
     }

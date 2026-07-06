@@ -34,6 +34,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	String get locale => 'English';
 	String get appName => 'LocalSend';
 	late final _StringsGeneralEn general = _StringsGeneralEn._(_root);
+	late final _StringsTransferTabEn transferTab = _StringsTransferTabEn._(_root);
 	late final _StringsReceiveTabEn receiveTab = _StringsReceiveTabEn._(_root);
 	late final _StringsSendTabEn sendTab = _StringsSendTabEn._(_root);
 	late final _StringsSettingsTabEn settingsTab = _StringsSettingsTabEn._(_root);
@@ -100,6 +101,17 @@ class _StringsGeneralEn {
 	String get unchanged => 'Unchanged';
 	String get unknown => 'Unknown';
 	String get noItemInClipboard => 'No items in Clipboard';
+}
+
+// Path: transferTab
+class _StringsTransferTabEn {
+	_StringsTransferTabEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Transfer';
+	String transferLine({required Object from, required Object to}) => '${from} sends to ${to}';
 }
 
 // Path: receiveTab

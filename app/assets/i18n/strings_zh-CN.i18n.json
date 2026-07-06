@@ -40,6 +40,10 @@
     "unknown": "未知",
     "noItemInClipboard": "剪贴板中没有内容"
   },
+  "transferTab": {
+    "title": "传输",
+    "transferLine": "{from} 发送到 {to}"
+  },
   "receiveTab": {
     "title": "接收",
     "dropHint": "可拖入文件，或按 Ctrl+V 粘贴文本/图片",

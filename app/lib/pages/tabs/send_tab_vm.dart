@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:localsend_app/model/cross_file.dart';
 import 'package:localsend_app/model/persistence/favorite_device.dart';
 import 'package:localsend_app/model/send_mode.dart';
-import 'package:localsend_app/pages/progress_page.dart';
-import 'package:localsend_app/pages/send_page.dart';
 import 'package:localsend_app/pages/web_send_page.dart';
 import 'package:localsend_app/provider/favorites_provider.dart';
 import 'package:localsend_app/provider/local_ip_provider.dart';
@@ -18,7 +16,6 @@ import 'package:localsend_app/widget/dialogs/address_input_dialog.dart';
 import 'package:localsend_app/widget/dialogs/favorite_dialog.dart';
 import 'package:localsend_app/widget/dialogs/no_files_dialog.dart';
 import 'package:refena_flutter/refena_flutter.dart';
-import 'package:routerino/routerino.dart';
 
 class SendTabVm {
   final SendMode sendMode;
@@ -75,7 +72,7 @@ final sendTabVmProvider = ViewProvider((ref) {
         await ref.notifier(sendProvider).startSession(
               target: device,
               files: files,
-              background: false,
+              background: true,
             );
       }
     },
@@ -94,7 +91,7 @@ final sendTabVmProvider = ViewProvider((ref) {
         await ref.notifier(sendProvider).startSession(
               target: device,
               files: files,
-              background: false,
+              background: true,
             );
       }
     },
@@ -133,40 +130,29 @@ final sendTabVmProvider = ViewProvider((ref) {
         return;
       }
 
+      if (sendMode != SendMode.multiple) {
+        ref.notifier(sendProvider).clearAllSessions();
+      }
+
       await ref.notifier(sendProvider).startSession(
             target: device,
             files: selectedFiles,
-            background: false,
+            background: true,
           );
     },
     onTapDeviceMultiSend: (context, device) async {
       final session = ref.read(sendProvider).values.firstWhereOrNull((s) => s.target.ip == device.ip);
       if (session != null) {
-        if (session.status == SessionStatus.waiting) {
-          ref.notifier(sendProvider).setBackground(session.sessionId, false);
-          await context.push(
-            () => SendPage(showAppBar: true, closeSessionOnClose: false, sessionId: session.sessionId),
-            transition: RouterinoTransition.fade(),
-          );
-          ref.notifier(sendProvider).setBackground(session.sessionId, true);
-          return;
-        } else if (session.status == SessionStatus.sending || session.status == SessionStatus.finishedWithErrors) {
-          ref.notifier(sendProvider).setBackground(session.sessionId, false);
-          await context.push(() => ProgressPage(showAppBar: true, closeSessionOnClose: false, sessionId: session.sessionId));
-          ref.notifier(sendProvider).setBackground(session.sessionId, true);
+        if (session.status == SessionStatus.waiting || session.status == SessionStatus.sending) {
           return;
         }
+        ref.notifier(sendProvider).closeSession(session.sessionId);
       }
 
       final files = ref.read(selectedSendingFilesProvider);
       if (files.isEmpty) {
         await context.pushBottomSheet(() => const NoFilesDialog());
         return;
-      }
-
-      if (session != null) {
-        // close old session
-        ref.notifier(sendProvider).closeSession(session.sessionId);
       }
 
       await ref.notifier(sendProvider).startSession(
