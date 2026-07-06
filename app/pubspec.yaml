@@ -33,7 +33,7 @@ dependencies:
   gal: 2.3.0
   image_picker: 1.0.7
   in_app_purchase: 3.1.13 # [FOSS_REMOVE]
-  intl: ^0.18.0 # allow newer versions, so it can compile with newer Flutter versions
+  intl: ^0.19.0 # allow newer versions, so it can compile with newer Flutter versions
   launch_at_startup: 0.2.2
   logging: 1.2.0
   macos_dock_progress: ^1.0.0
@@ -42,7 +42,7 @@ dependencies:
   open_filex: 4.4.0
   package_info_plus: 4.2.0
   pasteboard: ^0.2.0
-  path: 1.8.3
+  path: 1.9.0
   path_provider: 2.1.2
   permission_handler: 11.0.1
   pretty_qr_code: 3.2.1
@@ -83,6 +83,7 @@ dev_dependencies:
   test: ^1.24.3
 
 dependency_overrides:
+  photo_manager: 3.6.4
   permission_handler_windows:
     # Remove windows support as it causes trouble with Windows 7
     # https://github.com/Baseflow/flutter-permission-handler/issues/1034

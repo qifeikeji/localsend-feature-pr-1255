@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 env:
-  FLUTTER_VERSION: "3.16.9"
+  FLUTTER_VERSION: "3.22.3"
 
 jobs:
   build:
@@ -34,6 +34,10 @@ jobs:
       - name: Dependencies
         working-directory: app
         run: flutter pub get
+
+      - name: Clean Windows build (avoid stale CMake generator)
+        working-directory: app
+        run: flutter clean
 
       - name: Compile for Windows (x64)
         working-directory: app
