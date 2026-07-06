@@ -66,6 +66,9 @@ const _enableAnimations = 'ls_enable_animations';
 const _deviceType = 'ls_device_type';
 const _deviceModel = 'ls_device_model';
 const _shareViaLinkAutoAccept = 'ls_share_via_link_auto_accept';
+const _historyPanelWidth = 'ls_history_panel_width';
+const _historyPanelVisible = 'ls_history_panel_visible';
+const _knownDeviceIps = 'ls_known_device_ips';
 
 final persistenceProvider = Provider<PersistenceService>((ref) {
   throw Exception('persistenceProvider not initialized');
@@ -393,6 +396,30 @@ class PersistenceService {
 
   Future<void> setDeviceModel(String deviceModel) async {
     await _prefs.setString(_deviceModel, deviceModel);
+  }
+
+  double getHistoryPanelWidth() {
+    return _prefs.getDouble(_historyPanelWidth) ?? 280;
+  }
+
+  Future<void> setHistoryPanelWidth(double width) async {
+    await _prefs.setDouble(_historyPanelWidth, width);
+  }
+
+  bool getHistoryPanelVisible() {
+    return _prefs.getBool(_historyPanelVisible) ?? true;
+  }
+
+  Future<void> setHistoryPanelVisible(bool visible) async {
+    await _prefs.setBool(_historyPanelVisible, visible);
+  }
+
+  String getKnownDeviceIps() {
+    return _prefs.getString(_knownDeviceIps) ?? '';
+  }
+
+  Future<void> setKnownDeviceIps(String ips) async {
+    await _prefs.setString(_knownDeviceIps, ips);
   }
 
   Future<void> clear() async {

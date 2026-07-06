@@ -11,11 +11,13 @@ class TextFieldTv extends StatefulWidget {
   final String name;
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
+  final int? maxLines;
 
   const TextFieldTv({
     required this.name,
     required this.controller,
     required this.onChanged,
+    this.maxLines,
   });
 
   @override
@@ -45,6 +47,7 @@ class _TextFieldTvState extends State<TextFieldTv> with Refena {
                   textAlign: TextAlign.center,
                   onChanged: widget.onChanged,
                   autofocus: true,
+                  maxLines: widget.maxLines,
                   onFieldSubmitted: (_) => context.pop(),
                 ),
                 actions: [
@@ -69,8 +72,9 @@ class _TextFieldTvState extends State<TextFieldTv> with Refena {
     } else {
       return TextFormField(
         controller: widget.controller,
-        textAlign: TextAlign.center,
+        textAlign: widget.maxLines == null || widget.maxLines == 1 ? TextAlign.center : TextAlign.start,
         onChanged: widget.onChanged,
+        maxLines: widget.maxLines,
       );
     }
   }

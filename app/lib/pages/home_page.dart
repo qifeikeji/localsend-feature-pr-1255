@@ -1,16 +1,15 @@
-import 'dart:io';
-
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/init.dart';
+import 'package:localsend_app/pages/home_page.dart';
 import 'package:localsend_app/pages/tabs/receive_tab.dart';
 import 'package:localsend_app/pages/tabs/send_tab.dart';
 import 'package:localsend_app/pages/tabs/settings_tab.dart';
-import 'package:localsend_app/provider/selection/selected_sending_files_provider.dart';
+import 'package:localsend_app/provider/settings_provider.dart';
 import 'package:localsend_app/provider/ui/home_tab_provider.dart';
-import 'package:localsend_app/theme.dart';
-import 'package:localsend_app/util/native/cross_file_converters.dart';
+import 'package:localsend_app/util/incoming_items_handler.dart';
+import 'package:localsend_app/widget/panels/receive_history_panel.dart';
 import 'package:localsend_app/widget/responsive_builder.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 
@@ -95,20 +94,21 @@ class _HomePageState extends State<HomePage> with Refena {
         });
       },
       onDragDone: (event) async {
-        if (event.files.length == 1 && Directory(event.files.first.path).existsSync()) {
-          // user dropped a directory
-          await ref.redux(selectedSendingFilesProvider).dispatchAsync(AddDirectoryAction(event.files.first.path));
-        } else {
-          // user dropped one or more files
-          await ref.redux(selectedSendingFilesProvider).dispatchAsync(AddFilesAction(
-                files: event.files,
-                converter: CrossFileConverters.convertXFile,
-              ));
+        final queued = await IncomingItemsHandler.handleDroppedFiles(ref, event.files);
+        if (!queued) {
+          return;
         }
-        _goToPage(HomeTab.send.index);
+        if (_currentTab == HomeTab.receive) {
+          if (mounted) {
+            IncomingItemsHandler.showQueuedSnackBar(context);
+          }
+        } else {
+          _goToPage(HomeTab.send.index);
+        }
       },
       child: ResponsiveBuilder(
         builder: (sizingInformation) {
+          final showHistoryPanel = sizingInformation.isDesktop && ref.watch(settingsProvider.select((s) => s.historyPanelVisible));
           return Scaffold(
             body: Row(
               children: [
@@ -171,6 +171,7 @@ class _HomePageState extends State<HomePage> with Refena {
                     ),
                   ),
                 ),
+                if (showHistoryPanel) const ReceiveHistoryPanel(),
               ],
             ),
             bottomNavigationBar: sizingInformation.isMobile

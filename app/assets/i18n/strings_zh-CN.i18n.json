@@ -42,6 +42,8 @@
   },
   "receiveTab": {
     "title": "接收",
+    "dropHint": "可拖入文件，或按 Ctrl+V 粘贴文本/图片",
+    "itemsQueued": "已加入发送队列",
     "infoBox": {
       "ip": "IP:",
       "port": "端口：",
@@ -126,7 +128,9 @@
       "portWarning": "由于正在使用自定义端口，你可能不会被其他设备检测到。（默认端口：{defaultPort}）",
       "encryption": "加密",
       "multicastGroup": "多播",
-      "multicastGroupWarning": "由于正在使用自定义多播地址，你可能不会被其他设备检测到。（默认地址：{defaultMulticast}）"
+      "multicastGroupWarning": "由于正在使用自定义多播地址，你可能不会被其他设备检测到。（默认地址：{defaultMulticast}）",
+      "knownDeviceIps": "已知设备 IP",
+      "knownDeviceIpsHint": "每行一个 IPv4 地址（例如 192.168.1.10）。在 UDP 多播无效时用于加速发现设备。"
     },
     "other": {
       "title": "其他",
@@ -159,6 +163,7 @@
     "empty": "无历史记录。",
     "entryActions": {
       "open": "打开文件",
+      "openContainingFolder": "打开所在文件夹",
       "info": "信息",
       "deleteFromHistory": "从历史记录中删除"
     }

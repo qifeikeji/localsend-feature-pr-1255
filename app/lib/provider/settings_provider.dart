@@ -40,6 +40,9 @@ class SettingsService extends PureNotifier<SettingsState> {
         deviceType: _persistence.getDeviceType(),
         deviceModel: _persistence.getDeviceModel(),
         shareViaLinkAutoAccept: _persistence.getShareViaLinkAutoAccept(),
+        historyPanelWidth: _persistence.getHistoryPanelWidth(),
+        historyPanelVisible: _persistence.getHistoryPanelVisible(),
+        knownDeviceIps: _persistence.getKnownDeviceIps(),
       );
 
   Future<void> setAlias(String alias) async {
@@ -188,5 +191,21 @@ class SettingsService extends PureNotifier<SettingsState> {
     state = state.copyWith(
       shareViaLinkAutoAccept: shareViaLinkAutoAccept,
     );
+  }
+
+  Future<void> setHistoryPanelWidth(double width) async {
+    final clamped = width.clamp(200.0, 480.0);
+    await _persistence.setHistoryPanelWidth(clamped);
+    state = state.copyWith(historyPanelWidth: clamped);
+  }
+
+  Future<void> setHistoryPanelVisible(bool visible) async {
+    await _persistence.setHistoryPanelVisible(visible);
+    state = state.copyWith(historyPanelVisible: visible);
+  }
+
+  Future<void> setKnownDeviceIps(String ips) async {
+    await _persistence.setKnownDeviceIps(ips);
+    state = state.copyWith(knownDeviceIps: ips);
   }
 }

@@ -4,6 +4,7 @@ import 'package:localsend_app/provider/favorites_provider.dart';
 import 'package:localsend_app/provider/local_ip_provider.dart';
 import 'package:localsend_app/provider/network/nearby_devices_provider.dart';
 import 'package:localsend_app/provider/settings_provider.dart';
+import 'package:localsend_app/util/known_device_ips.dart';
 import 'package:localsend_app/util/sleep.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 
@@ -28,7 +29,14 @@ class StartSmartScan extends AsyncGlobalAction {
     // At the same time, try to discover favorites
     final favorites = ref.read(favoritesProvider);
     final https = ref.read(settingsProvider).https;
-    await ref.redux(nearbyDevicesProvider).dispatchAsync(StartFavoriteScan(devices: favorites, https: https));
+    final settings = ref.read(settingsProvider);
+    final knownIps = knownDeviceIpsFromSettings(settings);
+    await Future.wait<void>([
+      ref.redux(nearbyDevicesProvider).dispatchAsync(StartFavoriteScan(devices: favorites, https: https)),
+      ref.redux(nearbyDevicesProvider).dispatchAsync(
+        StartKnownIpScan(ips: knownIps, port: settings.port, https: https),
+      ),
+    ]);
 
     if (!forceLegacy) {
       // Wait a bit before trying the legacy method.

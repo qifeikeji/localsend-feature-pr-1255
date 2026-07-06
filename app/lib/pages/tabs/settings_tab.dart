@@ -376,6 +376,26 @@ class SettingsTab extends StatelessWidget {
                       },
                     ),
                   ),
+                if (vm.advanced)
+                  _SettingsEntry(
+                    label: t.settingsTab.network.knownDeviceIps,
+                    child: TextFieldTv(
+                      name: t.settingsTab.network.knownDeviceIps,
+                      controller: vm.knownDeviceIpsController,
+                      maxLines: 8,
+                      onChanged: (s) async {
+                        await ref.notifier(settingsProvider).setKnownDeviceIps(s);
+                      },
+                    ),
+                  ),
+                if (vm.advanced)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: Text(
+                      t.settingsTab.network.knownDeviceIpsHint,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ),
                 AnimatedCrossFade(
                   crossFadeState: vm.settings.port != defaultPort ? CrossFadeState.showSecond : CrossFadeState.showFirst,
                   duration: const Duration(milliseconds: 200),

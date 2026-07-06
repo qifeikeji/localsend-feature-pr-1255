@@ -32,6 +32,8 @@ class SettingsTabVmMapper extends ClassMapperBase<SettingsTabVm> {
   static const Field<SettingsTabVm, TextEditingController> _f$portController = Field('portController', _$portController);
   static TextEditingController _$multicastController(SettingsTabVm v) => v.multicastController;
   static const Field<SettingsTabVm, TextEditingController> _f$multicastController = Field('multicastController', _$multicastController);
+  static TextEditingController _$knownDeviceIpsController(SettingsTabVm v) => v.knownDeviceIpsController;
+  static const Field<SettingsTabVm, TextEditingController> _f$knownDeviceIpsController = Field('knownDeviceIpsController', _$knownDeviceIpsController);
   static SettingsState _$settings(SettingsTabVm v) => v.settings;
   static const Field<SettingsTabVm, SettingsState> _f$settings = Field('settings', _$settings);
   static ServerState? _$serverState(SettingsTabVm v) => v.serverState;
@@ -64,6 +66,7 @@ class SettingsTabVmMapper extends ClassMapperBase<SettingsTabVm> {
     #deviceModelController: _f$deviceModelController,
     #portController: _f$portController,
     #multicastController: _f$multicastController,
+    #knownDeviceIpsController: _f$knownDeviceIpsController,
     #settings: _f$settings,
     #serverState: _f$serverState,
     #deviceInfo: _f$deviceInfo,
@@ -85,6 +88,7 @@ class SettingsTabVmMapper extends ClassMapperBase<SettingsTabVm> {
         deviceModelController: data.dec(_f$deviceModelController),
         portController: data.dec(_f$portController),
         multicastController: data.dec(_f$multicastController),
+        knownDeviceIpsController: data.dec(_f$knownDeviceIpsController),
         settings: data.dec(_f$settings),
         serverState: data.dec(_f$serverState),
         deviceInfo: data.dec(_f$deviceInfo),
@@ -152,6 +156,7 @@ abstract class SettingsTabVmCopyWith<$R, $In extends SettingsTabVm, $Out> implem
       TextEditingController? deviceModelController,
       TextEditingController? portController,
       TextEditingController? multicastController,
+      TextEditingController? knownDeviceIpsController,
       SettingsState? settings,
       ServerState? serverState,
       DeviceInfoResult? deviceInfo,
@@ -186,6 +191,7 @@ class _SettingsTabVmCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Setting
           TextEditingController? deviceModelController,
           TextEditingController? portController,
           TextEditingController? multicastController,
+          TextEditingController? knownDeviceIpsController,
           SettingsState? settings,
           Object? serverState = $none,
           DeviceInfoResult? deviceInfo,
@@ -203,6 +209,7 @@ class _SettingsTabVmCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Setting
         if (deviceModelController != null) #deviceModelController: deviceModelController,
         if (portController != null) #portController: portController,
         if (multicastController != null) #multicastController: multicastController,
+        if (knownDeviceIpsController != null) #knownDeviceIpsController: knownDeviceIpsController,
         if (settings != null) #settings: settings,
         if (serverState != $none) #serverState: serverState,
         if (deviceInfo != null) #deviceInfo: deviceInfo,
@@ -222,6 +229,7 @@ class _SettingsTabVmCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Setting
       deviceModelController: data.get(#deviceModelController, or: $value.deviceModelController),
       portController: data.get(#portController, or: $value.portController),
       multicastController: data.get(#multicastController, or: $value.multicastController),
+      knownDeviceIpsController: data.get(#knownDeviceIpsController, or: $value.knownDeviceIpsController),
       settings: data.get(#settings, or: $value.settings),
       serverState: data.get(#serverState, or: $value.serverState),
       deviceInfo: data.get(#deviceInfo, or: $value.deviceInfo),

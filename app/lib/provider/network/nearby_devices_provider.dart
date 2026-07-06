@@ -82,6 +82,20 @@ class NearbyDevicesService extends ReduxNotifier<NearbyDevicesState> {
     return runner.stream.where((device) => device != null).cast<Device>();
   }
 
+  Stream<Device> _getKnownIpStream({required List<String> ips, required int port, required bool https}) {
+    if (ips.isEmpty) {
+      return const Stream.empty();
+    }
+    final runner = TaskRunner<Device?>(
+      initialTasks: List.generate(
+        ips.length,
+        (index) => () async => _doRequest(ips[index], port, https),
+      ),
+      concurrency: 30,
+    );
+    return runner.stream.where((device) => device != null).cast<Device>();
+  }
+
   Future<Device?> _doRequest(String currentIp, int port, bool https) async {
     _logger.fine('Requesting $currentIp');
     final device = await _targetedDiscoveryService.state.discover(
@@ -207,6 +221,29 @@ class StartFavoriteScan extends AsyncReduxAction<NearbyDevicesService, NearbyDev
     return state.copyWith(
       runningFavoriteScan: false,
     );
+  }
+}
+
+class StartKnownIpScan extends AsyncReduxAction<NearbyDevicesService, NearbyDevicesState> {
+  final List<String> ips;
+  final int port;
+  final bool https;
+
+  StartKnownIpScan({
+    required this.ips,
+    required this.port,
+    required this.https,
+  });
+
+  @override
+  Future<NearbyDevicesState> reduce() async {
+    if (ips.isEmpty) {
+      return state;
+    }
+    await for (final device in notifier._getKnownIpStream(ips: ips, port: port, https: https)) {
+      await dispatchAsync(RegisterDeviceAction(device));
+    }
+    return state;
   }
 }
 

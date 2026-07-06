@@ -110,6 +110,8 @@ class _StringsReceiveTabEn {
 
 	// Translations
 	String get title => 'Receive';
+	String get dropHint => 'Drop files here or press Ctrl+V to paste text or images';
+	String get itemsQueued => 'Added to send queue';
 	late final _StringsReceiveTabInfoBoxEn infoBox = _StringsReceiveTabInfoBoxEn._(_root);
 }
 
@@ -610,6 +612,8 @@ class _StringsSettingsTabNetworkEn {
 	String get encryption => 'Encryption';
 	String get multicastGroup => 'Multicast';
 	String multicastGroupWarning({required Object defaultMulticast}) => 'You might not be detected by other devices because you are using a custom multicast address. (default: ${defaultMulticast})';
+	String get knownDeviceIps => 'Known device IPs';
+	String get knownDeviceIpsHint => 'One IPv4 address per line (e.g. 192.168.1.10). Used to speed up discovery when UDP multicast fails.';
 }
 
 // Path: settingsTab.other
@@ -657,6 +661,7 @@ class _StringsReceiveHistoryPageEntryActionsEn {
 
 	// Translations
 	String get open => 'Open file';
+	String get openContainingFolder => 'Open containing folder';
 	String get info => 'Information';
 	String get deleteFromHistory => 'Delete from history';
 }

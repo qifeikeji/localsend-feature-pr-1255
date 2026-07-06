@@ -105,6 +105,8 @@ class _StringsReceiveTabZhCn extends _StringsReceiveTabEn {
 
 	// Translations
 	@override String get title => '接收';
+	@override String get dropHint => '可拖入文件，或按 Ctrl+V 粘贴文本/图片';
+	@override String get itemsQueued => '已加入发送队列';
 	@override late final _StringsReceiveTabInfoBoxZhCn infoBox = _StringsReceiveTabInfoBoxZhCn._(_root);
 }
 
@@ -534,6 +536,8 @@ class _StringsSettingsTabNetworkZhCn extends _StringsSettingsTabNetworkEn {
 	@override String get encryption => '加密';
 	@override String get multicastGroup => '多播';
 	@override String multicastGroupWarning({required Object defaultMulticast}) => '由于正在使用自定义多播地址，你可能不会被其他设备检测到。（默认地址：${defaultMulticast}）';
+	@override String get knownDeviceIps => '已知设备 IP';
+	@override String get knownDeviceIpsHint => '每行一个 IPv4 地址（例如 192.168.1.10）。在 UDP 多播无效时用于加速发现设备。';
 }
 
 // Path: settingsTab.other
@@ -581,6 +585,7 @@ class _StringsReceiveHistoryPageEntryActionsZhCn extends _StringsReceiveHistoryP
 
 	// Translations
 	@override String get open => '打开文件';
+	@override String get openContainingFolder => '打开所在文件夹';
 	@override String get info => '信息';
 	@override String get deleteFromHistory => '从历史记录中删除';
 }

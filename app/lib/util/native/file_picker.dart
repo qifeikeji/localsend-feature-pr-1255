@@ -8,9 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/pages/apk_picker_page.dart';
+import 'package:localsend_app/pages/home_page.dart';
 import 'package:localsend_app/provider/selection/selected_sending_files_provider.dart';
+import 'package:localsend_app/provider/ui/home_tab_provider.dart';
 import 'package:localsend_app/theme.dart';
-import 'package:localsend_app/util/determine_image_type.dart';
+import 'package:localsend_app/util/incoming_items_handler.dart';
 import 'package:localsend_app/util/native/cross_file_converters.dart';
 import 'package:localsend_app/util/native/pick_directory_path.dart';
 import 'package:localsend_app/util/native/platform_check.dart';
@@ -20,7 +22,6 @@ import 'package:localsend_app/widget/dialogs/loading_dialog.dart';
 import 'package:localsend_app/widget/dialogs/message_input_dialog.dart';
 import 'package:localsend_app/widget/dialogs/no_permission_dialog.dart';
 import 'package:logging/logging.dart';
-import 'package:pasteboard/pasteboard.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 import 'package:routerino/routerino.dart';
@@ -119,7 +120,10 @@ class PickFileAction extends AsyncGlobalAction {
         break;
       case FilePickerOption.clipboard:
         // ignore: use_build_context_synchronously
-        await _pickClipboard(context, ref);
+        final queued = await IncomingItemsHandler.handleClipboard(ref, context);
+        if (queued && ref.read(homeTabProvider) == HomeTab.receive && context.mounted) {
+          IncomingItemsHandler.showQueuedSnackBar(context);
+        }
         break;
       case FilePickerOption.app:
         // ignore: use_build_context_synchronously
@@ -239,52 +243,8 @@ Future<void> _pickText(BuildContext context, Ref ref) async {
   }
 }
 
-Future<void> _pickClipboard(BuildContext context, Ref ref) async {
-  late List<String> files = [];
-  for (final file in await Pasteboard.files()) {
-    files.add(file);
-  }
-  if (files.isNotEmpty) {
-    await ref.redux(selectedSendingFilesProvider).dispatchAsync(AddFilesAction(
-          files: files.map((e) => XFile(e)).toList(),
-          converter: CrossFileConverters.convertXFile,
-        ));
-    return;
-  }
-
-  final data = await Clipboard.getData(Clipboard.kTextPlain);
-  if (data?.text != null) {
-    ref.redux(selectedSendingFilesProvider).dispatch(AddMessageAction(message: data!.text!));
-    return;
-  }
-
-  final image = await Pasteboard.image;
-  if (image != null) {
-    final now = DateTime.now();
-    final fileName =
-        'clipboard_${now.year}-${now.month.twoDigitString}-${now.day.twoDigitString}_${now.hour.twoDigitString}-${now.minute.twoDigitString}.${determineImageType(image)}';
-    ref.redux(selectedSendingFilesProvider).dispatch(AddBinaryAction(
-          bytes: image,
-          fileType: FileType.image,
-          fileName: fileName,
-        ));
-    return;
-  }
-
-  if (!context.mounted) {
-    return;
-  }
-
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text(t.general.noItemInClipboard),
-  ));
-}
-
 Future<void> _pickApp(BuildContext context) async {
   // Currently, only Android APK
   await context.push(() => const ApkPickerPage());
 }
 
-extension on int {
-  String get twoDigitString => toString().padLeft(2, '0');
-}

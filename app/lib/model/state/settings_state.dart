@@ -31,6 +31,9 @@ class SettingsState with SettingsStateMappable {
   final DeviceType? deviceType;
   final String? deviceModel;
   final bool shareViaLinkAutoAccept;
+  final double historyPanelWidth;
+  final bool historyPanelVisible;
+  final String knownDeviceIps;
 
   const SettingsState({
     required this.showToken,
@@ -55,5 +58,8 @@ class SettingsState with SettingsStateMappable {
     required this.deviceType,
     required this.deviceModel,
     required this.shareViaLinkAutoAccept,
+    required this.historyPanelWidth,
+    required this.historyPanelVisible,
+    required this.knownDeviceIps,
   });
 }

@@ -4,6 +4,7 @@ import 'package:localsend_app/pages/home_page.dart';
 import 'package:localsend_app/pages/receive_history_page.dart';
 import 'package:localsend_app/pages/tabs/receive_tab_vm.dart';
 import 'package:localsend_app/provider/animation_provider.dart';
+import 'package:localsend_app/provider/settings_provider.dart';
 import 'package:localsend_app/provider/ui/home_tab_provider.dart';
 import 'package:localsend_app/util/ip_helper.dart';
 import 'package:localsend_app/widget/animations/initial_fade_transition.dart';
@@ -20,6 +21,8 @@ class ReceiveTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.ref.watch(receiveTabVmProvider);
+    final hideHistoryForSidePanel =
+        MediaQuery.sizeOf(context).width >= 800 && context.ref.watch(settingsProvider.select((s) => s.historyPanelVisible));
 
     return Stack(
       children: [
@@ -61,6 +64,16 @@ class ReceiveTab extends StatelessWidget {
                                 child: Text(
                                   vm.serverState == null ? t.general.offline : vm.localIps.map((ip) => '#${ip.visualId}').toSet().join(' '),
                                   style: const TextStyle(fontSize: 24),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              InitialFadeTransition(
+                                duration: const Duration(milliseconds: 300),
+                                delay: const Duration(milliseconds: 600),
+                                child: Text(
+                                  t.receiveTab.dropHint,
+                                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.outline),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -161,7 +174,7 @@ class ReceiveTab extends StatelessWidget {
               children: [
                 if (!vm.showAdvanced)
                   AnimatedOpacity(
-                    opacity: vm.showHistoryButton ? 1 : 0,
+                    opacity: vm.showHistoryButton && !hideHistoryForSidePanel ? 1 : 0,
                     duration: const Duration(milliseconds: 200),
                     child: CustomIconButton(
                       onPressed: () async {

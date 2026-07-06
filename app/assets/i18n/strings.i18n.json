@@ -42,6 +42,8 @@
   },
   "receiveTab": {
     "title": "Receive",
+    "dropHint": "Drop files here or press Ctrl+V to paste text or images",
+    "itemsQueued": "Added to send queue",
     "infoBox": {
       "ip": "IP:",
       "port": "Port:",
@@ -126,7 +128,9 @@
       "portWarning": "You might not be detected by other devices because you are using a custom port. (default: {defaultPort})",
       "encryption": "Encryption",
       "multicastGroup": "Multicast",
-      "multicastGroupWarning": "You might not be detected by other devices because you are using a custom multicast address. (default: {defaultMulticast})"
+      "multicastGroupWarning": "You might not be detected by other devices because you are using a custom multicast address. (default: {defaultMulticast})",
+      "knownDeviceIps": "Known device IPs",
+      "knownDeviceIpsHint": "One IPv4 address per line (e.g. 192.168.1.10). Used to speed up discovery when UDP multicast fails."
     },
     "other": {
       "title": "Other",
@@ -159,6 +163,7 @@
     "empty": "The history is empty.",
     "entryActions": {
       "open": "Open file",
+      "openContainingFolder": "Open containing folder",
       "info": "Information",
       "deleteFromHistory": "Delete from history"
     }
