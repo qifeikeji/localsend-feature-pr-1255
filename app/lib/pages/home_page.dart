@@ -87,22 +87,44 @@ class _HomePageState extends State<HomePage> with Refena {
     });
   }
 
+  void _syncTabFromProvider(HomeTab providerTab) {
+    if (providerTab == _currentTab) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      final latest = ref.read(homeTabProvider);
+      if (latest != _currentTab) {
+        setState(() => _currentTab = latest);
+        _pageController.jumpToPage(latest.index);
+      }
+    });
+  }
+
+  void _switchToReceiveIfIncoming(SessionStatus? status) {
+    if (status != SessionStatus.waiting || _currentTab == HomeTab.receive) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      if (ref.read(serverProvider)?.session?.status == SessionStatus.waiting && _currentTab != HomeTab.receive) {
+        _goToPage(HomeTab.receive.index);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Translations.of(context); // rebuild on locale change
 
-    ref.listen(homeTabProvider, (previous, next) {
-      if (_currentTab != next) {
-        setState(() => _currentTab = next);
-        _pageController.jumpToPage(next.index);
-      }
-    });
-
-    ref.listen(serverProvider.select((s) => s?.session?.status), (previous, next) {
-      if (next == SessionStatus.waiting && _currentTab != HomeTab.receive) {
-        _goToPage(HomeTab.receive.index);
-      }
-    });
+    final providerTab = ref.watch(homeTabProvider);
+    final sessionStatus = ref.watch(serverProvider.select((s) => s?.session?.status));
+    _syncTabFromProvider(providerTab);
+    _switchToReceiveIfIncoming(sessionStatus);
 
     return DropTarget(
       onDragEntered: (_) {

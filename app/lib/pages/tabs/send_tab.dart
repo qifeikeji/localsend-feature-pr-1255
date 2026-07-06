@@ -10,6 +10,7 @@ import 'package:localsend_app/provider/animation_provider.dart';
 import 'package:localsend_app/provider/network/nearby_devices_provider.dart';
 import 'package:localsend_app/provider/network/scan_facade.dart';
 import 'package:localsend_app/provider/network/send_provider.dart';
+import 'package:localsend_app/provider/progress_provider.dart';
 import 'package:localsend_app/provider/clipboard_paste_action.dart';
 import 'package:localsend_app/provider/selection/selected_sending_files_provider.dart';
 import 'package:localsend_app/provider/settings_provider.dart';
@@ -564,8 +565,10 @@ class _MultiSendDeviceListTile extends StatelessWidget {
     if (session != null) {
       final files = session.files.values.where((f) => f.token != null);
       final progressNotifier = ref.watch(progressProvider);
-      final currBytes = files.fold<int>(
-          0, (prev, curr) => prev + ((progressNotifier.getProgress(sessionId: session.sessionId, fileId: curr.file.id) * curr.file.size).round()));
+      final currBytes = files.fold<int>(0, (prev, curr) {
+        final part = (progressNotifier.getProgress(sessionId: session.sessionId, fileId: curr.file.id) * curr.file.size).round();
+        return prev + part;
+      });
       final totalBytes = files.fold<int>(0, (prev, curr) => prev + curr.file.size);
       progress = totalBytes == 0 ? 0 : currBytes / totalBytes;
     } else {
