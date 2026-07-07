@@ -1,6 +1,5 @@
 name: Build macOS arm64
 
-# Intel Mac (e.g. macOS 12.x on Mac mini): use scripts/build_macos_intel_local.sh locally.
 # Artifacts from this workflow are arm64 only (Apple Silicon).
 
 on:
@@ -60,16 +59,17 @@ jobs:
           CODE_SIGNING_REQUIRED: "NO"
         run: flutter build macos --release
 
-      - name: Zip app bundle
+      - name: Create DMG
         working-directory: app
         run: |
-          ZIP="LocalSend-${{ steps.version.outputs.version }}-macos-arm64.zip"
-          ditto -c -k --sequesterRsrc --keepParent \
-            build/macos/Build/Products/Release/LocalSend.app "$ZIP"
-          echo "ZIP_NAME=$ZIP" >> $GITHUB_ENV
+          DMG="LocalSend-${{ steps.version.outputs.version }}-macos-arm64.dmg"
+          bash ../scripts/ci/create_macos_dmg.sh \
+            build/macos/Build/Products/Release/LocalSend.app \
+            "$DMG"
+          echo "DMG_NAME=$DMG" >> $GITHUB_ENV
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-arm64
-          path: app/${{ env.ZIP_NAME }}
+          path: app/${{ env.DMG_NAME }}
