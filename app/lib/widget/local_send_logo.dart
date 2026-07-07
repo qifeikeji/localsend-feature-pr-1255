@@ -15,7 +15,11 @@ class LocalSendLogo extends StatelessWidget {
       width: _logoSize,
       height: _logoSize,
       child: CustomPaint(
-        painter: LocalSendLogoPainter(color: primary),
+        size: const Size(_logoSize, _logoSize),
+        painter: LocalSendLogoPainter(
+          innerColor: primary,
+          outerColor: primary.withOpacity(0.55),
+        ),
       ),
     );
 
