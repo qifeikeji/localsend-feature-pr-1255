@@ -71,7 +71,7 @@ jobs:
       - name: Patch AppImage for portable extract-and-run
         run: |
           APPIMAGE=$(find . -maxdepth 1 -name '*.AppImage' ! -name '*.AppImage.zsync' | head -1)
-          bash scripts/appimage/repack_appimage_portable.sh "$APPIMAGE" x86_64
+          bash scripts/appimage/patch_and_repack_appimage.sh "$APPIMAGE" x86_64
 
       - name: Rename AppImage with version
         run: |

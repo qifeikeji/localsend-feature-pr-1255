@@ -71,7 +71,7 @@ jobs:
       - name: Patch AppImage for portable extract-and-run
         run: |
           APPIMAGE=$(find . -maxdepth 1 -name '*.AppImage' ! -name '*.AppImage.zsync' | head -1)
-          bash scripts/appimage/repack_appimage_portable.sh "$APPIMAGE" aarch64
+          bash scripts/appimage/patch_and_repack_appimage.sh "$APPIMAGE" aarch64
 
       - name: Upload AppImage file
         uses: actions/upload-artifact@v4
