@@ -173,64 +173,79 @@ class ReceiveHistoryListBody extends StatelessWidget {
           ...entries.map((entry) {
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: hPad, vertical: compact ? 4 : 8),
-              child: GestureDetector(
-                onSecondaryTapDown: (details) async {
-                  await _showContextMenu(context, details.globalPosition, entry, dispatcher);
-                },
-                child: InkWell(
-                  splashColor: Colors.transparent,
-                  splashFactory: NoSplash.splashFactory,
-                  highlightColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  onTap: entry.path != null ? () async => _openFile(context, entry, dispatcher) : null,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      FilePathThumbnail(
-                        path: entry.path,
-                        fileType: entry.fileType,
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onSecondaryTapUp: (details) async {
+                        await _showContextMenu(context, details.globalPosition, entry, dispatcher);
+                      },
+                      child: InkWell(
+                        splashColor: Colors.transparent,
+                        splashFactory: NoSplash.splashFactory,
+                        highlightColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        onTap: entry.path != null ? () async => _openFile(context, entry, dispatcher) : null,
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 3),
-                            Text(
-                              entry.fileName,
-                              style: TextStyle(fontSize: compact ? 14 : 16),
-                              maxLines: 1,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
+                            FilePathThumbnail(
+                              path: entry.path,
+                              fileType: entry.fileType,
                             ),
-                            Text(
-                              '${entry.timestampString} - ${entry.fileSize.asReadableFileSize} - ${entry.senderAlias}',
-                              maxLines: 1,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: const TextStyle(color: Colors.grey, fontSize: 12),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    entry.fileName,
+                                    style: TextStyle(fontSize: compact ? 14 : 16),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                  ),
+                                  Text(
+                                    '${entry.timestampString} - ${entry.fileSize.asReadableFileSize} - ${entry.senderAlias}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 4),
-                      PopupMenuButton<ReceiveHistoryEntryOption>(
-                        iconSize: compact ? 20 : 24,
-                        onSelected: (item) async => _handleOption(context, entry, item, dispatcher),
-                        itemBuilder: (BuildContext context) {
-                          return _optionsFor(entry)
-                              .map(
-                                (e) => PopupMenuItem<ReceiveHistoryEntryOption>(
-                                  value: e,
-                                  child: Text(e.label),
-                                ),
-                              )
-                              .toList();
-                        },
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  Builder(
+                    builder: (menuContext) {
+                      return IconButton(
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        iconSize: compact ? 20 : 24,
+                        tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+                        icon: const Icon(Icons.more_vert),
+                        onPressed: () async {
+                          final options = _optionsFor(entry);
+                          final selected = await showReceiveHistoryEntryMenu(
+                            menuContext,
+                            receiveHistoryMenuPositionBelow(menuContext),
+                            options,
+                          );
+                          if (selected != null && context.mounted) {
+                            await _handleOption(context, entry, selected, dispatcher);
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ],
               ),
             );
           }),

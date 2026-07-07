@@ -1,74 +1,57 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:localsend_app/widget/app_rounded_button_style.dart';
 import 'package:localsend_app/widget/lists/receive_history_list_body.dart' show ReceiveHistoryEntryOption;
 
-/// Instant context menu at [globalPosition] (opens to the right and down from the cursor).
-Future<ReceiveHistoryEntryOption?> showReceiveHistoryContextMenu(
+RelativeRect receiveHistoryMenuPositionFromGlobal(BuildContext context, Offset globalPosition) {
+  final overlayBox = Overlay.of(context).context.findRenderObject()! as RenderBox;
+  final local = overlayBox.globalToLocal(globalPosition);
+  return RelativeRect.fromRect(
+    Rect.fromLTWH(local.dx, local.dy, 0, 0),
+    Offset.zero & overlayBox.size,
+  );
+}
+
+RelativeRect receiveHistoryMenuPositionBelow(BuildContext anchorContext) {
+  final anchorBox = anchorContext.findRenderObject()! as RenderBox;
+  final overlayBox = Overlay.of(anchorContext).context.findRenderObject()! as RenderBox;
+  final globalTopLeft = anchorBox.localToGlobal(Offset.zero);
+  final localTopLeft = overlayBox.globalToLocal(globalTopLeft);
+  return RelativeRect.fromRect(
+    Rect.fromLTWH(localTopLeft.dx, localTopLeft.dy + anchorBox.size.height, 0, 0),
+    Offset.zero & overlayBox.size,
+  );
+}
+
+Future<ReceiveHistoryEntryOption?> showReceiveHistoryEntryMenu(
   BuildContext context,
-  Offset globalPosition,
+  RelativeRect position,
   List<ReceiveHistoryEntryOption> options,
 ) {
   if (options.isEmpty) {
     return Future.value(null);
   }
 
-  final completer = Completer<ReceiveHistoryEntryOption?>();
-  final overlay = Overlay.of(context);
-  late OverlayEntry entry;
-  var dismissed = false;
-
-  void dismiss([ReceiveHistoryEntryOption? value]) {
-    if (!dismissed) {
-      dismissed = true;
-      entry.remove();
-    }
-    if (!completer.isCompleted) {
-      completer.complete(value);
-    }
-  }
-
-  entry = OverlayEntry(
-    builder: (ctx) {
-      final buttonStyle = appToolbarElevatedButtonStyle(ctx);
-      return Stack(
-        children: [
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: () => dismiss(),
-              behavior: HitTestBehavior.translucent,
-            ),
-          ),
-          Positioned(
-            left: globalPosition.dx,
-            top: globalPosition.dy,
-            child: Material(
-              color: Colors.transparent,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (var i = 0; i < options.length; i++) ...[
-                    if (i > 0) const SizedBox(height: 4),
-                    ElevatedButton(
-                      style: buttonStyle,
-                      onPressed: () => dismiss(options[i]),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(options[i].label),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ],
-      );
-    },
+  return showMenu<ReceiveHistoryEntryOption>(
+    context: context,
+    position: position,
+    items: [
+      for (final option in options)
+        PopupMenuItem<ReceiveHistoryEntryOption>(
+          value: option,
+          child: Text(option.label),
+        ),
+    ],
   );
+}
 
-  overlay.insert(entry);
-  return completer.future;
+/// Instant context menu at [globalPosition] (cursor / long-press).
+Future<ReceiveHistoryEntryOption?> showReceiveHistoryContextMenu(
+  BuildContext context,
+  Offset globalPosition,
+  List<ReceiveHistoryEntryOption> options,
+) {
+  return showReceiveHistoryEntryMenu(
+    context,
+    receiveHistoryMenuPositionFromGlobal(context, globalPosition),
+    options,
+  );
 }
