@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Make extracted squashfs-root runnable on any distro (Arch/Manjaro, Ubuntu, …).
-# AppRun and ./localsend_app both use the wrapper; never rely on a build-time PT_INTERP.
+# Flutter needs /proc/self/exe to point at the real binary — do not launch via ld-linux.
 set -euo pipefail
 
 APPDIR="${1:-AppDir}"
@@ -28,15 +28,21 @@ if [[ ! -f "$REAL" ]]; then
 fi
 
 if [[ -f "$APPRUN_ENV" ]]; then
-  # AppRun must exec the wrapper (shell), not the ELF with a CI-specific interpreter.
   sed -i 's|^APPDIR_EXEC_PATH=$APPDIR/localsend_app.bin$|APPDIR_EXEC_PATH=$APPDIR/localsend_app|' "$APPRUN_ENV" || true
   sed -i 's|^APPDIR_EXEC_PATH=\$APPDIR/localsend_app.bin$|APPDIR_EXEC_PATH=$APPDIR/localsend_app|' "$APPRUN_ENV" || true
 fi
 
 if command -v patchelf >/dev/null 2>&1; then
-  # RUNPATH only — do not set PT_INTERP at build time (paths differ on Arch vs Ubuntu).
   RPATH='$ORIGIN/lib:$ORIGIN/lib/x86_64-linux-gnu:$ORIGIN/usr/lib:$ORIGIN/usr/lib/x86_64-linux-gnu:$ORIGIN/usr/lib/aarch64-linux-gnu'
   patchelf --set-rpath "$RPATH" "$REAL" 2>/dev/null || true
+  for interp in /usr/lib/ld-linux-x86-64.so.2 /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2 \
+    /usr/lib/ld-linux-aarch64.so.1 /lib/aarch64-linux-gnu/ld-linux-aarch64.so.1 /lib64/ld-linux-aarch64.so.1; do
+    if [[ -e "$interp" ]]; then
+      patchelf --set-interpreter "$interp" "$REAL" 2>/dev/null && break
+    fi
+  done
+else
+  echo "patch_appdir_portable: warning: patchelf not found; install patchelf and re-run on this machine" >&2
 fi
 
 cat > "$BINARY" << 'EOF'
@@ -57,7 +63,6 @@ fi
 REAL="$APPDIR/localsend_app.bin"
 LIBPATH="$APPDIR_LIBRARY_PATH"
 
-# Portable run: host glibc + bundled libs (no Ubuntu runtime/compat on Arch/Manjaro).
 export LD_LIBRARY_PATH="$LIBPATH"
 if [ -z "${APPRUN_RUNTIME-}" ]; then
   unset LD_PRELOAD
@@ -68,27 +73,9 @@ if [ ! -f "$REAL" ]; then
   exit 1
 fi
 
-LD_LINUX=""
-for candidate in \
-  /usr/lib/ld-linux-x86-64.so.2 \
-  /lib64/ld-linux-x86-64.so.2 \
-  /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 \
-  /usr/lib/ld-linux-aarch64.so.1 \
-  /lib64/ld-linux-aarch64.so.1 \
-  /lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
-do
-  if [ -e "$candidate" ]; then
-    LD_LINUX=$candidate
-    break
-  fi
-done
-
-if [ -z "$LD_LINUX" ]; then
-  echo "localsend_app: system dynamic linker not found" >&2
-  exit 127
-fi
-
-exec "$LD_LINUX" --library-path "$LIBPATH" "$REAL" "$@"
+# Flutter resolves lib/libapp.so from /proc/self/exe — must exec the ELF directly (not via ld-linux).
+cd "$APPDIR" || exit 1
+exec "$REAL" "$@"
 EOF
 
 chmod 755 "$BINARY"

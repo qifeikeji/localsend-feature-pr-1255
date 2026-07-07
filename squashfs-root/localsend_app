@@ -15,7 +15,6 @@ fi
 REAL="$APPDIR/localsend_app.bin"
 LIBPATH="$APPDIR_LIBRARY_PATH"
 
-# Portable run: host glibc + bundled libs (no Ubuntu runtime/compat on Arch/Manjaro).
 export LD_LIBRARY_PATH="$LIBPATH"
 if [ -z "${APPRUN_RUNTIME-}" ]; then
   unset LD_PRELOAD
@@ -26,24 +25,6 @@ if [ ! -f "$REAL" ]; then
   exit 1
 fi
 
-LD_LINUX=""
-for candidate in \
-  /usr/lib/ld-linux-x86-64.so.2 \
-  /lib64/ld-linux-x86-64.so.2 \
-  /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 \
-  /usr/lib/ld-linux-aarch64.so.1 \
-  /lib64/ld-linux-aarch64.so.1 \
-  /lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
-do
-  if [ -e "$candidate" ]; then
-    LD_LINUX=$candidate
-    break
-  fi
-done
-
-if [ -z "$LD_LINUX" ]; then
-  echo "localsend_app: system dynamic linker not found" >&2
-  exit 127
-fi
-
-exec "$LD_LINUX" --library-path "$LIBPATH" "$REAL" "$@"
+# Flutter resolves lib/libapp.so from /proc/self/exe — must exec the ELF directly (not via ld-linux).
+cd "$APPDIR" || exit 1
+exec "$REAL" "$@"
