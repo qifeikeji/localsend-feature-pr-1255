@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Make extracted squashfs-root runnable via ./localsend_app on any distro (Arch/Manjaro,
-# Ubuntu, etc.) by wrapping the ELF. AppRun must exec the real ELF (see AppRun.env).
+# Make extracted squashfs-root runnable on any distro (Arch/Manjaro, Ubuntu, …).
+# AppRun and ./localsend_app both use the wrapper; never rely on a build-time PT_INTERP.
 set -euo pipefail
 
 APPDIR="${1:-AppDir}"
@@ -28,27 +28,19 @@ if [[ ! -f "$REAL" ]]; then
 fi
 
 if [[ -f "$APPRUN_ENV" ]]; then
-  sed -i 's|^APPDIR_EXEC_PATH=\$APPDIR/localsend_app$|APPDIR_EXEC_PATH=$APPDIR/localsend_app.bin|' "$APPRUN_ENV" || true
-  if grep -q '^APPDIR_EXEC_PATH=$APPDIR/localsend_app$' "$APPRUN_ENV" 2>/dev/null; then
-    sed -i 's|^APPDIR_EXEC_PATH=$APPDIR/localsend_app$|APPDIR_EXEC_PATH=$APPDIR/localsend_app.bin|' "$APPRUN_ENV"
-  fi
+  # AppRun must exec the wrapper (shell), not the ELF with a CI-specific interpreter.
+  sed -i 's|^APPDIR_EXEC_PATH=$APPDIR/localsend_app.bin$|APPDIR_EXEC_PATH=$APPDIR/localsend_app|' "$APPRUN_ENV" || true
+  sed -i 's|^APPDIR_EXEC_PATH=\$APPDIR/localsend_app.bin$|APPDIR_EXEC_PATH=$APPDIR/localsend_app|' "$APPRUN_ENV" || true
 fi
 
 if command -v patchelf >/dev/null 2>&1; then
+  # RUNPATH only — do not set PT_INTERP at build time (paths differ on Arch vs Ubuntu).
   RPATH='$ORIGIN/lib:$ORIGIN/lib/x86_64-linux-gnu:$ORIGIN/usr/lib:$ORIGIN/usr/lib/x86_64-linux-gnu:$ORIGIN/usr/lib/aarch64-linux-gnu'
-  for interp in /usr/lib/ld-linux-x86-64.so.2 /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2 \
-    /usr/lib/ld-linux-aarch64.so.1 /lib/aarch64-linux-gnu/ld-linux-aarch64.so.1; do
-    if [[ -e "$interp" ]]; then
-      patchelf --set-interpreter "$interp" "$REAL" 2>/dev/null && break
-    fi
-  done
   patchelf --set-rpath "$RPATH" "$REAL" 2>/dev/null || true
 fi
 
 cat > "$BINARY" << 'EOF'
 #!/bin/sh
-# Direct launch from extracted squashfs-root (not via ./AppRun).
-# Uses the host glibc + libraries bundled inside this directory.
 APPDIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
 ORIGIN="$APPDIR"
 export APPDIR ORIGIN
@@ -63,17 +55,40 @@ else
 fi
 
 REAL="$APPDIR/localsend_app.bin"
+LIBPATH="$APPDIR_LIBRARY_PATH"
 
-# Do not use runtime/compat (Ubuntu glibc 2.35) on rolling distros — it breaks against /usr/lib.
-export LD_LIBRARY_PATH="$APPDIR_LIBRARY_PATH"
-unset LD_PRELOAD
+# Portable run: host glibc + bundled libs (no Ubuntu runtime/compat on Arch/Manjaro).
+export LD_LIBRARY_PATH="$LIBPATH"
+if [ -z "${APPRUN_RUNTIME-}" ]; then
+  unset LD_PRELOAD
+fi
 
 if [ ! -f "$REAL" ]; then
   echo "localsend_app: missing $REAL" >&2
   exit 1
 fi
 
-exec "$REAL" "$@"
+LD_LINUX=""
+for candidate in \
+  /usr/lib/ld-linux-x86-64.so.2 \
+  /lib64/ld-linux-x86-64.so.2 \
+  /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 \
+  /usr/lib/ld-linux-aarch64.so.1 \
+  /lib64/ld-linux-aarch64.so.1 \
+  /lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
+do
+  if [ -e "$candidate" ]; then
+    LD_LINUX=$candidate
+    break
+  fi
+done
+
+if [ -z "$LD_LINUX" ]; then
+  echo "localsend_app: system dynamic linker not found" >&2
+  exit 127
+fi
+
+exec "$LD_LINUX" --library-path "$LIBPATH" "$REAL" "$@"
 EOF
 
 chmod 755 "$BINARY"
