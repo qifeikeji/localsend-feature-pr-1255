@@ -6,12 +6,19 @@ set -euo pipefail
 APPIMAGE="${1:?Usage: repack_appimage_portable.sh /path/to/AppImage [x86_64|aarch64]}"
 ARCH="${2:-x86_64}"
 
-ROOT="$(cd "$(dirname "$APPIMAGE")" && pwd)"
-NAME="$(basename "$APPIMAGE")"
-cd "$ROOT"
+FINAL="$(readlink -f "$APPIMAGE")"
+ROOT="$(dirname "$FINAL")"
+NAME="$(basename "$FINAL")"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
+WORKDIR="$(mktemp -d)"
+cleanup() { rm -rf "$WORKDIR"; }
+trap cleanup EXIT
+
+# Docker-based appimage-builder often leaves root-owned files; work on a user-owned copy.
+cp "$FINAL" "$WORKDIR/$NAME"
+cd "$WORKDIR"
 chmod +x "$NAME"
 "./$NAME" --appimage-extract
 bash "$REPO_ROOT/scripts/appimage/patch_appdir_portable.sh" squashfs-root
@@ -27,5 +34,4 @@ OUT="${NAME}.repack"
 rm -f "$OUT"
 export ARCH="$ARCH"
 APPIMAGE_EXTRACT_AND_RUN=1 "./$TOOL" --no-appstream squashfs-root "$OUT"
-mv "$OUT" "$NAME"
-rm -rf squashfs-root
+install -m 755 "$OUT" "$FINAL"
