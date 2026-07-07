@@ -1,0 +1,122 @@
+apt:
+  sources:
+  - deb http://archive.ubuntu.com/ubuntu/ jammy main restricted
+  - deb http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted
+  - deb http://archive.ubuntu.com/ubuntu/ jammy universe
+  - deb http://archive.ubuntu.com/ubuntu/ jammy-updates universe
+  - deb http://archive.ubuntu.com/ubuntu/ jammy multiverse
+  - deb http://archive.ubuntu.com/ubuntu/ jammy-updates multiverse
+  - deb http://archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe
+    multiverse
+  - deb http://security.ubuntu.com/ubuntu/ jammy-security main restricted
+  - deb http://security.ubuntu.com/ubuntu/ jammy-security universe
+  - deb http://security.ubuntu.com/ubuntu/ jammy-security multiverse
+  packages:
+  - libgmp10:amd64=2:6.2.1+dfsg-3ubuntu1
+  - zlib1g:amd64=1:1.2.11.dfsg-2ubuntu9.2
+  - libcairo2:amd64=1.16.0-5ubuntu2.1
+  - libpcre3:amd64=2:8.39-13ubuntu0.22.04.1
+  - dconf-service:amd64=0.40.0-3ubuntu0.1
+  - libdbus-1-3:amd64=1.12.20-2ubuntu4.1
+  - librsvg2-2:amd64=2.52.5+dfsg-3ubuntu0.2
+  - libzstd1:amd64=1.4.8+dfsg-3build1
+  - libxrender1:amd64=1:0.9.10-1build4
+  - libtasn1-6:amd64=4.18.0-4ubuntu0.2
+  - liblzma5:amd64=5.2.5-2ubuntu1.1
+  - libdeflate0:amd64=1.10-2
+  - librsvg2-common:amd64=2.52.5+dfsg-3ubuntu0.2
+  - libxrandr2:amd64=2:1.5.2-1build1
+  - liblcms2-2:amd64=2.12~rc1-2ubuntu0.1
+  - libidn2-0:amd64=2.3.2-2build1
+  - libaudit1:amd64=1:3.0.7-1build1
+  - libcairo-gobject2:amd64=1.16.0-5ubuntu2.1
+  - libepoxy0:amd64=1.5.10-1
+  - libc6:amd64=2.35-0ubuntu3.13
+  - libk5crypto3:amd64=1.19.2-2ubuntu0.7
+  - libpam-systemd:amd64=249.11-0ubuntu3.21
+  - libglib2.0-0:amd64=2.72.4-0ubuntu2.9
+  - libxdamage1:amd64=1:1.1.5-2build2
+  - libstdc++6:amd64=12.3.0-1ubuntu1~22.04.3
+  - libayatana-indicator3-7:amd64=0.9.1-1
+  - libblkid1:amd64=2.37.2-4ubuntu3.5
+  - libdconf1:amd64=0.40.0-3ubuntu0.1
+  - libwebp7:amd64=1.2.2-2ubuntu0.22.04.2
+  - libavahi-client3:amd64=0.8-5ubuntu5.5
+  - libxinerama1:amd64=2:1.1.4-3
+  - libxi6:amd64=2:1.8-1build1
+  - liblz4-1:amd64=1.9.3-2build2
+  - libatk1.0-data:all=2.36.0-3build1
+  - libpcre2-8-0:amd64=10.39-3ubuntu0.1
+  - libtiff5:amd64=4.3.0-6ubuntu0.13
+  - hicolor-icon-theme:all=0.17-2
+  - libayatana-ido3-0.4-0:amd64=0.9.1-1
+  - libuuid1:amd64=2.37.2-4ubuntu3.5
+  - libcrypt1:amd64=1:4.4.27-1
+  - libhogweed6:amd64=3.7.3-1build2
+  - libcolord2:amd64=1.4.6-1
+  - libxkbcommon0:amd64=1.4.0-1
+  - libpam0g:amd64=1.4.0-11ubuntu2.6
+  - libayatana-appindicator3-1:amd64=0.5.90-7ubuntu2
+  - libgcc-s1:amd64=12.3.0-1ubuntu1~22.04.3
+  - libbrotli1:amd64=1.0.9-2build6
+  - libxext6:amd64=2:1.3.4-1build1
+  - libpangoft2-1.0-0:amd64=1.50.6+ds-2ubuntu1
+  - libpng16-16:amd64=1.6.37-3ubuntu0.5
+  - libexpat1:amd64=2.4.7-1ubuntu0.7
+  - libavahi-common3:amd64=0.8-5ubuntu5.5
+  - libfontconfig1:amd64=2.13.1-4.2ubuntu5
+  - libgdk-pixbuf2.0-common:all=2.42.8+dfsg-1ubuntu0.5
+  - libcap2:amd64=1:2.44-1ubuntu0.22.04.3
+  - libapparmor1:amd64=3.0.4-2ubuntu2.5
+  - libxcomposite1:amd64=1:0.4.5-1build2
+  - libgssapi-krb5-2:amd64=1.19.2-2ubuntu0.7
+  - dbus:amd64=1.12.20-2ubuntu4.1
+  - libkrb5support0:amd64=1.19.2-2ubuntu0.7
+  - gcc-12-base:amd64=12.3.0-1ubuntu1~22.04.3
+  - libharfbuzz0b:amd64=2.7.4-1ubuntu3.2
+  - libpango-1.0-0:amd64=1.50.6+ds-2ubuntu1
+  - libkeyutils1:amd64=1.6.1-2ubuntu3
+  - libgnutls30:amd64=3.7.3-4ubuntu1.9
+  - libp11-kit0:amd64=0.24.0-6build1
+  - libpangocairo-1.0-0:amd64=1.50.6+ds-2ubuntu1
+  - libthai0:amd64=0.1.29-1build1
+  - libjpeg-turbo8:amd64=2.1.2-0ubuntu1
+  - libcom-err2:amd64=1.46.5-2ubuntu1.2
+  - libssl3:amd64=3.0.2-0ubuntu1.25
+  - libdbusmenu-glib4:amd64=16.04.1+18.10.20180917-0ubuntu8
+  - libcap-ng0:amd64=0.7.9-2.2build3
+  - libsystemd0:amd64=249.11-0ubuntu3.21
+  - libfribidi0:amd64=1.0.8-2ubuntu3.1
+  - libdbusmenu-gtk3-4:amd64=16.04.1+18.10.20180917-0ubuntu8
+  - libjbig0:amd64=2.1-3.1ubuntu0.22.04.1
+  - libicu70:amd64=70.1-2
+  - libselinux1:amd64=3.3-1build2
+  - libatspi2.0-0:amd64=2.44.0-3
+  - dbus-user-session:amd64=1.12.20-2ubuntu4.1
+  - libatk-bridge2.0-0:amd64=2.38.0-3
+  - libffi8:amd64=3.4.2-4
+  - libgtk-3-common:all=3.24.33-1ubuntu2.2
+  - libnettle8:amd64=3.7.3-1build2
+  - libgcrypt20:amd64=1.9.4-3ubuntu3.2
+  - xkb-data:all=2.33-1
+  - libxfixes3:amd64=1:6.0.0-1
+  - libxml2:amd64=2.9.13+dfsg-1ubuntu0.12
+  - libfreetype6:amd64=2.11.1+dfsg-1ubuntu0.3
+  - libdatrie1:amd64=0.2.13-2
+  - libmount1:amd64=2.37.2-4ubuntu3.5
+  - libavahi-common-data:amd64=0.8-5ubuntu5.5
+  - libkrb5-3:amd64=1.19.2-2ubuntu0.7
+  - libjpeg8:amd64=8c-2ubuntu10
+  - dconf-gsettings-backend:amd64=0.40.0-3ubuntu0.1
+  - libxcursor1:amd64=1:1.2.0-2build4
+  - libgraphite2-3:amd64=1.3.14-1ubuntu0.1
+  - libaudit-common:all=1:3.0.7-1build1
+  - libudev1:amd64=249.11-0ubuntu3.21
+  - libcups2:amd64=2.4.1op1-1ubuntu4.21
+  - libthai-data:all=0.1.29-1build1
+  - libatk1.0-0:amd64=2.36.0-3build1
+  - libgtk-3-0:amd64=3.24.33-1ubuntu2.2
+  - libpixman-1-0:amd64=0.40.0-1ubuntu0.22.04.1
+  - libgdk-pixbuf-2.0-0:amd64=2.42.8+dfsg-1ubuntu0.5
+  - libgpg-error0:amd64=1.43-3
+  - libunistring2:amd64=1.0-1

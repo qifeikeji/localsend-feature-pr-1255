@@ -1,0 +1,28 @@
+#!/bin/sh
+# Direct launch from extracted squashfs-root (not via ./AppRun).
+# Uses the host glibc + libraries bundled inside this directory.
+APPDIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+ORIGIN="$APPDIR"
+export APPDIR ORIGIN
+
+if [ -f "$APPDIR/AppRun.env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . "$APPDIR/AppRun.env"
+  set +a
+else
+  APPDIR_LIBRARY_PATH="$APPDIR/lib:$APPDIR/lib/x86_64-linux-gnu:$APPDIR/lib/x86_64-linux-gnu/security:$APPDIR/usr/lib/x86_64-linux-gnu:$APPDIR/lib/x86_64"
+fi
+
+REAL="$APPDIR/localsend_app.bin"
+
+# Do not use runtime/compat (Ubuntu glibc 2.35) on rolling distros — it breaks against /usr/lib.
+export LD_LIBRARY_PATH="$APPDIR_LIBRARY_PATH"
+unset LD_PRELOAD
+
+if [ ! -f "$REAL" ]; then
+  echo "localsend_app: missing $REAL" >&2
+  exit 1
+fi
+
+exec "$REAL" "$@"
