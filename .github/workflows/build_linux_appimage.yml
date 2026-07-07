@@ -36,6 +36,9 @@ jobs:
         working-directory: app
         run: flutter pub get
 
+      - name: Ensure UI assets
+        run: bash scripts/ensure_app_assets.sh
+
       - name: Compile linux (x64)
         working-directory: app
         run: flutter build linux

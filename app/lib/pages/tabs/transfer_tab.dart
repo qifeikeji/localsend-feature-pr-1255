@@ -235,34 +235,58 @@ class _ReceiveIdleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Consumer(builder: (context, ref) {
-              final animations = ref.watch(animationProvider);
-              final activeTab = ref.watch(homeTabProvider);
-              return RotatingWidget(
-                duration: const Duration(seconds: 15),
-                spinning: animations && activeTab == HomeTab.transfer,
-                child: const LocalSendLogo(withText: false),
-              );
-            }),
-            const SizedBox(height: 12),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(vm.serverState?.alias ?? vm.aliasSettings, style: const TextStyle(fontSize: 36)),
-            ),
-            Text(
-              vm.serverState == null ? t.general.offline : vm.localIps.map((ip) => '#${ip.visualId}').toSet().join(' '),
-              style: const TextStyle(fontSize: 18),
-              textAlign: TextAlign.center,
-            ),
-          ],
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Consumer(
+          builder: (context, ref) {
+            final animations = ref.watch(animationProvider);
+            final activeTab = ref.watch(homeTabProvider);
+            return IgnorePointer(
+              child: Opacity(
+                opacity: 0.08,
+                child: RotatingWidget(
+                  duration: const Duration(seconds: 40),
+                  spinning: animations && activeTab == HomeTab.transfer,
+                  child: Transform.scale(
+                    scale: 1.8,
+                    child: const LocalSendLogo(withText: false),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
-      ),
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Consumer(builder: (context, ref) {
+                  final animations = ref.watch(animationProvider);
+                  final activeTab = ref.watch(homeTabProvider);
+                  return RotatingWidget(
+                    duration: const Duration(seconds: 15),
+                    spinning: animations && activeTab == HomeTab.transfer,
+                    child: const LocalSendLogo(withText: false),
+                  );
+                }),
+                const SizedBox(height: 12),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(vm.serverState?.alias ?? vm.aliasSettings, style: const TextStyle(fontSize: 36)),
+                ),
+                Text(
+                  vm.serverState == null ? t.general.offline : vm.localIps.map((ip) => '#${ip.visualId}').toSet().join(' '),
+                  style: const TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

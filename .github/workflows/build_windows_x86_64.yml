@@ -45,6 +45,10 @@ jobs:
           VERSION=$(sed -n 's/^version: \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' pubspec.yaml)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Ensure UI assets
+        shell: pwsh
+        run: ./scripts/ensure_app_assets.ps1
+
       - name: Dependencies
         working-directory: app
         run: flutter pub get
@@ -55,7 +59,11 @@ jobs:
 
       - name: Compile for Windows (x64)
         working-directory: app
-        run: flutter build windows --release
+        run: flutter build windows --release --no-tree-shake-icons
+
+      - name: Verify Windows bundle
+        shell: pwsh
+        run: ./scripts/verify_windows_bundle.ps1
 
       - name: Create empty settings.json
         working-directory: app

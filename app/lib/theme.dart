@@ -50,6 +50,7 @@ ThemeData getTheme(ColorMode colorMode, Brightness brightness, DynamicColors? dy
   return ThemeData(
     colorScheme: colorScheme,
     useMaterial3: true,
+    iconTheme: IconThemeData(color: colorScheme.onSurface),
     navigationBarTheme: colorScheme.brightness == Brightness.dark
         ? NavigationBarThemeData(
             iconTheme: MaterialStateProperty.all(const IconThemeData(color: Colors.white)),
@@ -235,6 +236,7 @@ ThemeData _getMacosTheme() {
     useMaterial3: true,
     scaffoldBackgroundColor: const Color(0xFF1D1D1F),
     cardColor: const Color(0xFF2C2C2E),
+    iconTheme: const IconThemeData(color: Colors.white),
     navigationBarTheme: NavigationBarThemeData(
       iconTheme: WidgetStateProperty.all(const IconThemeData(color: Colors.white)),
     ),

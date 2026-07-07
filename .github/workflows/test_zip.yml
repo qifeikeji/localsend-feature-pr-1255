@@ -37,13 +37,21 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
 
+      - name: Ensure UI assets
+        shell: pwsh
+        run: ./scripts/ensure_app_assets.ps1
+
       - name: Dependencies
         working-directory: app
         run: flutter pub get
 
       - name: Compile for Windows
         working-directory: app
-        run: flutter build windows
+        run: flutter build windows --release --no-tree-shake-icons
+
+      - name: Verify Windows bundle
+        shell: pwsh
+        run: ./scripts/verify_windows_bundle.ps1
 
       - name: Create empty settings.json
         working-directory: app
