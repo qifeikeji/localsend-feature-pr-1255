@@ -1,0 +1,73 @@
+name: Build macOS x86_64
+
+# Build Intel macOS artifacts on GitHub-hosted Intel runners.
+# The app's deployment target remains managed by the macOS project files.
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: "3.22.3"
+
+jobs:
+  build:
+    runs-on: macos-15-intel
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: false
+
+      - name: Get version
+        id: version
+        working-directory: app
+        run: |
+          VERSION=$(sed -n 's/^version: \([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p' pubspec.yaml)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: CocoaPods
+        working-directory: app/macos
+        run: |
+          rm -rf Pods Podfile.lock
+          pod install
+
+      - name: Ad-hoc signing (CI)
+        run: bash scripts/ci/macos_adhoc_sign.sh
+
+      - name: Clean macOS build
+        working-directory: app
+        run: flutter clean
+
+      - name: Compile macOS (x86_64)
+        working-directory: app
+        env:
+          ARCHS: x86_64
+          EXCLUDED_ARCHS: arm64
+          ONLY_ACTIVE_ARCH: YES
+          CODE_SIGN_IDENTITY: "-"
+          CODE_SIGNING_ALLOWED: "NO"
+          CODE_SIGNING_REQUIRED: "NO"
+        run: flutter build macos --release
+
+      - name: Zip app bundle
+        working-directory: app
+        run: |
+          ZIP="LocalSend-${{ steps.version.outputs.version }}-macos-x86_64.zip"
+          ditto -c -k --sequesterRsrc --keepParent \
+            build/macos/Build/Products/Release/LocalSend.app "$ZIP"
+          echo "ZIP_NAME=$ZIP" >> $GITHUB_ENV
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-x86_64
+          path: app/${{ env.ZIP_NAME }}
