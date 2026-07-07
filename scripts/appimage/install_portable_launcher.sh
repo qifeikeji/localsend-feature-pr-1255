@@ -32,37 +32,11 @@ if [ ! -f "$REAL" ]; then
   exit 1
 fi
 
-_fix_interp() {
-  command -v patchelf >/dev/null 2>&1 || return 1
-  _current="$(patchelf --print-interpreter "$REAL" 2>/dev/null || true)"
-  if [ -n "$_current" ] && [ -e "$_current" ]; then
-    return 0
-  fi
-  _local=""
-  for _c in \
-    /usr/lib/ld-linux-x86-64.so.2 \
-    /lib64/ld-linux-x86-64.so.2 \
-    /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 \
-    /usr/lib/ld-linux-aarch64.so.1 \
-    /lib64/ld-linux-aarch64.so.1 \
-    /lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
-  do
-    if [ -e "$_c" ]; then
-      _local="$_c"
-      break
-    fi
-  done
-  if [ -z "$_local" ]; then
-    return 1
-  fi
-  patchelf --set-interpreter "$_local" "$REAL"
-}
-
-if ! _fix_interp; then
-  _bad="$(patchelf --print-interpreter "$REAL" 2>/dev/null || echo unknown)"
-  echo "localsend_app: ELF interpreter not usable on this system (${_bad})." >&2
-  echo "Install patchelf (sudo pacman -S patchelf), then run:" >&2
-  echo "  bash path/to/scripts/appimage/patch_appdir_portable.sh \"$APPDIR\"" >&2
+FIX="$APPDIR/usr/libexec/fix_elf_interpreter.sh"
+if [ -x "$FIX" ]; then
+  sh "$FIX" "$REAL" || exit 127
+else
+  echo "localsend_app: missing $FIX — re-run patch_appdir_portable.sh on this directory" >&2
   exit 127
 fi
 

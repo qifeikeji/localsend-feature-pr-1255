@@ -8,6 +8,7 @@ BINARY="$APPDIR/localsend_app"
 REAL="$APPDIR/localsend_app.bin"
 APPRUN_ENV="$APPDIR/AppRun.env"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIBEXEC="$APPDIR/usr/libexec"
 
 if [[ ! -f "$BINARY" && ! -f "$REAL" ]]; then
   echo "patch_appdir_portable: missing $BINARY" >&2
@@ -33,12 +34,15 @@ if [[ -f "$APPRUN_ENV" ]]; then
   sed -i 's|^APPDIR_EXEC_PATH=\$APPDIR/localsend_app.bin$|APPDIR_EXEC_PATH=$APPDIR/localsend_app|' "$APPRUN_ENV" || true
 fi
 
+mkdir -p "$LIBEXEC"
+cp "$SCRIPT_DIR/fix_elf_interpreter.sh" "$LIBEXEC/fix_elf_interpreter.sh"
+chmod 755 "$LIBEXEC/fix_elf_interpreter.sh"
+
 if command -v patchelf >/dev/null 2>&1; then
   RPATH='$ORIGIN/lib:$ORIGIN/lib/x86_64-linux-gnu:$ORIGIN/usr/lib:$ORIGIN/usr/lib/x86_64-linux-gnu:$ORIGIN/usr/lib/aarch64-linux-gnu'
   patchelf --set-rpath "$RPATH" "$REAL" 2>/dev/null || true
-  bash "$SCRIPT_DIR/fix_elf_interpreter.sh" "$REAL"
-else
-  echo "patch_appdir_portable: install patchelf on this machine, then re-run (Arch: sudo pacman -S patchelf)" >&2
 fi
+
+PATCHELF="" bash "$LIBEXEC/fix_elf_interpreter.sh" "$REAL"
 
 bash "$SCRIPT_DIR/install_portable_launcher.sh" "$APPDIR"
