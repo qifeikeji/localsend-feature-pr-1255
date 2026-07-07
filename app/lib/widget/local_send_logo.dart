@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:localsend_app/gen/assets.gen.dart';
+import 'package:localsend_app/widget/local_send_logo_painter.dart';
 
 class LocalSendLogo extends StatelessWidget {
   final bool withText;
 
   const LocalSendLogo({required this.withText});
 
+  static const _logoSize = 200.0;
+
   @override
   Widget build(BuildContext context) {
-    final logo = ColorFiltered(
-      colorFilter: ColorFilter.mode(
-        Theme.of(context).colorScheme.primary,
-        BlendMode.srcATop,
-      ),
-      child: Assets.img.logo512.image(
-        width: 200,
-        height: 200,
+    final primary = Theme.of(context).colorScheme.primary;
+    final logo = SizedBox(
+      width: _logoSize,
+      height: _logoSize,
+      child: CustomPaint(
+        painter: LocalSendLogoPainter(
+          color: primary,
+          outerRingColor: primary.withOpacity(0.55),
+        ),
       ),
     );
 
@@ -30,8 +33,7 @@ class LocalSendLogo extends StatelessWidget {
           ),
         ],
       );
-    } else {
-      return logo;
     }
+    return logo;
   }
 }

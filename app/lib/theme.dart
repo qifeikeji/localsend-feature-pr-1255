@@ -236,6 +236,12 @@ ThemeData _getMacosTheme() {
     useMaterial3: true,
     scaffoldBackgroundColor: const Color(0xFF1D1D1F),
     cardColor: const Color(0xFF2C2C2E),
+    cardTheme: const CardThemeData(
+      color: Color(0xFF2C2C2E),
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+      margin: EdgeInsets.zero,
+    ),
     iconTheme: const IconThemeData(color: Colors.white),
     navigationBarTheme: NavigationBarThemeData(
       iconTheme: WidgetStateProperty.all(const IconThemeData(color: Colors.white)),
