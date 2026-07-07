@@ -13,6 +13,31 @@ final _borderRadius = BorderRadius.circular(5);
 /// On desktop, we need to add additional padding to achieve the same visual appearance as on mobile
 double get desktopPaddingFix => checkPlatformIsDesktop() ? 8 : 0;
 
+/// UI font for Windows text (see https://github.com/localsend/localsend/issues/52).
+/// Do not set [ThemeData.fontFamily] directly — that breaks [Icon] / Material Icons on Windows.
+String? _windowsUiFontFamily() {
+  if (!checkPlatform([TargetPlatform.windows])) {
+    return null;
+  }
+  return switch (LocaleSettings.currentLocale) {
+    AppLocale.ja => 'Yu Gothic UI',
+    AppLocale.ko => 'Malgun Gothic',
+    AppLocale.zhCn => 'Microsoft YaHei UI',
+    AppLocale.zhHk || AppLocale.zhTw => 'Microsoft JhengHei UI',
+    _ => 'Segoe UI',
+  };
+}
+
+ThemeData _applyWindowsTextFont(ThemeData theme, String? fontFamily) {
+  if (fontFamily == null) {
+    return theme;
+  }
+  return theme.copyWith(
+    textTheme: theme.textTheme.apply(fontFamily: fontFamily),
+    primaryTextTheme: theme.primaryTextTheme.apply(fontFamily: fontFamily),
+  );
+}
+
 ThemeData getTheme(ColorMode colorMode, Brightness brightness, DynamicColors? dynamicColors) {
   if (colorMode == ColorMode.yaru) {
     return _getYaruTheme(brightness);
@@ -33,21 +58,9 @@ ThemeData getTheme(ColorMode colorMode, Brightness brightness, DynamicColors? dy
     borderRadius: _borderRadius,
   );
 
-  // https://github.com/localsend/localsend/issues/52
-  final String? fontFamily;
-  if (checkPlatform([TargetPlatform.windows])) {
-    fontFamily = switch (LocaleSettings.currentLocale) {
-      AppLocale.ja => 'Yu Gothic UI',
-      AppLocale.ko => 'Malgun Gothic',
-      AppLocale.zhCn => 'Microsoft YaHei UI',
-      AppLocale.zhHk || AppLocale.zhTw => 'Microsoft JhengHei UI',
-      _ => 'Segoe UI Variable Display',
-    };
-  } else {
-    fontFamily = null;
-  }
+  final windowsFont = _windowsUiFontFamily();
 
-  return ThemeData(
+  final theme = ThemeData(
     colorScheme: colorScheme,
     useMaterial3: true,
     iconTheme: IconThemeData(color: colorScheme.onSurface),
@@ -75,8 +88,9 @@ ThemeData getTheme(ColorMode colorMode, Brightness brightness, DynamicColors? dy
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8 + desktopPaddingFix),
       ),
     ),
-    fontFamily: fontFamily,
   );
+
+  return _applyWindowsTextFont(theme, windowsFont);
 }
 
 Future<void> updateSystemOverlayStyle(BuildContext context) async {
@@ -221,17 +235,9 @@ ThemeData _getMacosTheme() {
     borderRadius: _borderRadius,
   );
 
-  final String? fontFamily = checkPlatform([TargetPlatform.windows])
-      ? switch (LocaleSettings.currentLocale) {
-          AppLocale.ja => 'Yu Gothic UI',
-          AppLocale.ko => 'Malgun Gothic',
-          AppLocale.zhCn => 'Microsoft YaHei UI',
-          AppLocale.zhHk || AppLocale.zhTw => 'Microsoft Jhenghei UI',
-          _ => 'Segoe UI Variable Display',
-        }
-      : null;
+  final windowsFont = _windowsUiFontFamily();
 
-  return ThemeData(
+  final theme = ThemeData(
     colorScheme: colorScheme,
     useMaterial3: true,
     scaffoldBackgroundColor: const Color(0xFF1D1D1F),
@@ -303,6 +309,7 @@ ThemeData _getMacosTheme() {
       contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
     ),
     dividerColor: const Color(0xFF48484A),
-    fontFamily: fontFamily,
   );
+
+  return _applyWindowsTextFont(theme, windowsFont);
 }
