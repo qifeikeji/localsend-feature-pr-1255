@@ -913,6 +913,7 @@ extension on ColorMode {
       ColorMode.localsend => t.appName,
       ColorMode.oled => t.settingsTab.general.colorOptions.oled,
       ColorMode.yaru => 'Yaru',
+      ColorMode.macos => t.settingsTab.general.colorOptions.macos,
     };
   }
 }

@@ -246,7 +246,7 @@ class _ReceiveIdleSection extends StatelessWidget {
               final activeTab = ref.watch(homeTabProvider);
               return RotatingWidget(
                 duration: const Duration(seconds: 15),
-                spinning: vm.serverState != null && animations && activeTab == HomeTab.transfer,
+                spinning: animations && activeTab == HomeTab.transfer,
                 child: const LocalSendLogo(withText: false),
               );
             }),

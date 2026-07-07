@@ -902,6 +902,7 @@ class _StringsSettingsTabGeneralColorOptionsZhCn extends _StringsSettingsTabGene
 	// Translations
 	@override String get system => '跟随系统';
 	@override String get oled => 'OLED';
+	@override String get macos => 'macOS';
 }
 
 // Path: settingsTab.general.languageOptions

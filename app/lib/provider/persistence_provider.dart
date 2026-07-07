@@ -139,7 +139,7 @@ class PersistenceService {
     if (prefs.getString(_colorKey) == null) {
       await _initColorSetting(prefs, supportsDynamicColors);
     } else {
-      // fix when device does not support dynamic colors
+      // fix when device does not support dynamic colors or unknown color key
       final supported = supportsDynamicColors ? ColorMode.values : ColorMode.values.where((e) => e != ColorMode.system);
       final colorMode = supported.firstWhereOrNull((color) => color.name == prefs.getString(_colorKey));
       if (colorMode == null) {
@@ -147,12 +147,23 @@ class PersistenceService {
       }
     }
 
+    if (prefs.getString(_themeKey) == null) {
+      await prefs.setString(_themeKey, ThemeMode.dark.name);
+    }
+
+    if (prefs.getBool(_syncSidePanelWidths) == null) {
+      await prefs.setBool(_syncSidePanelWidths, true);
+    }
+
     return PersistenceService._(prefs);
   }
 
   static Future<void> _initColorSetting(SharedPreferences prefs, bool supportsDynamicColors) async {
-    await prefs.setString(
-        _colorKey, checkPlatform([TargetPlatform.android]) && supportsDynamicColors ? ColorMode.system.name : ColorMode.localsend.name);
+    if (checkPlatform([TargetPlatform.android]) && supportsDynamicColors) {
+      await prefs.setString(_colorKey, ColorMode.system.name);
+      return;
+    }
+    await prefs.setString(_colorKey, ColorMode.macos.name);
   }
 
   StoredSecurityContext getSecurityContext() {
@@ -464,7 +475,7 @@ class PersistenceService {
   }
 
   bool getSyncSidePanelWidths() {
-    return _prefs.getBool(_syncSidePanelWidths) ?? false;
+    return _prefs.getBool(_syncSidePanelWidths) ?? true;
   }
 
   Future<void> setSyncSidePanelWidths(bool value) async {

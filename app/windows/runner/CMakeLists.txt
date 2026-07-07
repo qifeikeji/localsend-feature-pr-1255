@@ -6,6 +6,15 @@ project(runner LANGUAGES CXX)
 # work.
 #
 # Any new source files that you add to the application should be added here.
+set(APP_ICON_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/../../assets/img/logo.ico")
+set(APP_ICON_DEST "${CMAKE_CURRENT_SOURCE_DIR}/resources/app_icon.ico")
+if(EXISTS "${APP_ICON_SOURCE}")
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/resources")
+  configure_file("${APP_ICON_SOURCE}" "${APP_ICON_DEST}" COPYONLY)
+else()
+  message(FATAL_ERROR "Windows app icon missing. Expected: ${APP_ICON_SOURCE}")
+endif()
+
 add_executable(${BINARY_NAME} WIN32
   "flutter_window.cpp"
   "main.cpp"

@@ -17,6 +17,9 @@ ThemeData getTheme(ColorMode colorMode, Brightness brightness, DynamicColors? dy
   if (colorMode == ColorMode.yaru) {
     return _getYaruTheme(brightness);
   }
+  if (colorMode == ColorMode.macos) {
+    return _getMacosTheme();
+  }
 
   final colorScheme = _determineColorScheme(colorMode, brightness, dynamicColors);
 
@@ -143,6 +146,7 @@ ColorScheme _determineColorScheme(ColorMode mode, Brightness brightness, Dynamic
         surface: Colors.black,
       ),
     ColorMode.yaru => throw 'Should reach here',
+    ColorMode.macos => throw 'Should reach here',
   };
 
   return colorScheme ?? defaultColorScheme;
@@ -187,5 +191,110 @@ ThemeData _getYaruTheme(Brightness brightness) {
         padding: checkPlatformIsDesktop() ? const EdgeInsets.all(16) : const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
     ),
+  );
+}
+
+/// macOS Ventura-style dark appearance (desktop accent, switches, surfaces).
+ThemeData _getMacosTheme() {
+  final colorScheme = ColorScheme.fromSeed(
+    seedColor: const Color(0xFF0A84FF),
+    brightness: Brightness.dark,
+  ).copyWith(
+    primary: const Color(0xFF0A84FF),
+    primaryContainer: const Color(0xFF409CFF),
+    secondaryContainer: const Color(0xFF3A3A3C),
+    surface: const Color(0xFF2C2C2E),
+    surfaceContainerHighest: const Color(0xFF3A3A3C),
+    outline: const Color(0xFF48484A),
+    outlineVariant: const Color(0xFF3A3A3C),
+    onSurface: Colors.white,
+    onSecondaryContainer: Colors.white,
+  );
+
+  const macSwitchTrackOn = Color(0xFF32D74B);
+  const macSwitchTrackOff = Color(0x7878807A);
+  const macSwitchThumb = Color(0xFFFFFFFF);
+
+  final inputBorder = OutlineInputBorder(
+    borderSide: const BorderSide(color: Color(0xFF48484A)),
+    borderRadius: _borderRadius,
+  );
+
+  final String? fontFamily = checkPlatform([TargetPlatform.windows])
+      ? switch (LocaleSettings.currentLocale) {
+          AppLocale.ja => 'Yu Gothic UI',
+          AppLocale.ko => 'Malgun Gothic',
+          AppLocale.zhCn => 'Microsoft YaHei UI',
+          AppLocale.zhHk || AppLocale.zhTw => 'Microsoft Jhenghei UI',
+          _ => 'Segoe UI Variable Display',
+        }
+      : null;
+
+  return ThemeData(
+    colorScheme: colorScheme,
+    useMaterial3: true,
+    scaffoldBackgroundColor: const Color(0xFF1D1D1F),
+    cardColor: const Color(0xFF2C2C2E),
+    navigationBarTheme: NavigationBarThemeData(
+      iconTheme: WidgetStateProperty.all(const IconThemeData(color: Colors.white)),
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) => macSwitchThumb),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return macSwitchTrackOn;
+        }
+        return macSwitchTrackOff;
+      }),
+      trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ButtonStyle(
+        foregroundColor: WidgetStateProperty.all(Colors.white),
+        backgroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.disabled)) {
+            return const Color(0xFF3A3A3C).withOpacity(0.5);
+          }
+          if (states.contains(WidgetState.hovered) || states.contains(WidgetState.pressed)) {
+            return const Color(0xFF48484A);
+          }
+          return const Color(0xFF3A3A3C);
+        }),
+        padding: WidgetStateProperty.all(EdgeInsets.symmetric(horizontal: 16, vertical: 8 + desktopPaddingFix)),
+        shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: _borderRadius)),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: ButtonStyle(
+        foregroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.hovered)) {
+            return const Color(0xFF64B5FF);
+          }
+          return const Color(0xFF0A84FF);
+        }),
+        padding: WidgetStateProperty.all(EdgeInsets.symmetric(horizontal: 16, vertical: 8 + desktopPaddingFix)),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.hovered) || states.contains(WidgetState.pressed)) {
+            return const Color(0xFF409CFF);
+          }
+          return const Color(0xFF0A84FF);
+        }),
+        foregroundColor: WidgetStateProperty.all(Colors.white),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFF3A3A3C),
+      border: inputBorder,
+      focusedBorder: inputBorder.copyWith(borderSide: const BorderSide(color: Color(0xFF0A84FF))),
+      enabledBorder: inputBorder,
+      contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+    ),
+    dividerColor: const Color(0xFF48484A),
+    fontFamily: fontFamily,
   );
 }

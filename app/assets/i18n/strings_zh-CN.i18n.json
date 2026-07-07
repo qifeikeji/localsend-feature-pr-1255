@@ -100,7 +100,8 @@
       "color": "颜色",
       "colorOptions": {
         "system": "跟随系统",
-        "oled": "OLED"
+        "oled": "OLED",
+        "macos": "macOS"
       },
       "language": "语言",
       "languageOptions": {

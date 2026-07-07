@@ -978,6 +978,7 @@ class _StringsSettingsTabGeneralColorOptionsEn {
 	// Translations
 	String get system => 'System';
 	String get oled => 'OLED';
+	String get macos => 'macOS';
 }
 
 // Path: settingsTab.general.languageOptions
