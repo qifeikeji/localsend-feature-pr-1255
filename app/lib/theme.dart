@@ -236,7 +236,7 @@ ThemeData _getMacosTheme() {
     useMaterial3: true,
     scaffoldBackgroundColor: const Color(0xFF1D1D1F),
     cardColor: const Color(0xFF2C2C2E),
-    cardTheme: const CardThemeData(
+    cardTheme: const CardTheme(
       color: Color(0xFF2C2C2E),
       elevation: 0,
       surfaceTintColor: Colors.transparent,
