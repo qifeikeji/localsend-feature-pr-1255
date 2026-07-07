@@ -3,9 +3,12 @@ version: 1
 script:
   # Workaround for error in Github Actions (https://github.com/AppImageCrafters/appimage-builder/issues/271)
   - which mksquashfs || apt install squashfs-tools
+  - which patchelf || apt install -y patchelf
 
 AppDir:
   path: AppDir
+  script:
+    - bash scripts/appimage/patch_appdir_portable.sh AppDir
   app_info:
     id: org.localsend.localsend_app
     name: LocalSend
